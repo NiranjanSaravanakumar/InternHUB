@@ -1,0 +1,124 @@
+.filter-sidebar {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 90px;
+}
+
+.filter-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-sidebar__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.filter-sidebar__clear {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--color-orange);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.filter-sidebar__clear:hover {
+  color: var(--color-orange-dark);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-value {
+  color: var(--color-orange);
+  font-weight: 700;
+}
+
+.filter-tabs {
+  display: flex;
+  background: var(--color-bg-light);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.filter-tab {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border-radius: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.filter-tab.active {
+  background: var(--color-white);
+  color: var(--color-orange);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-range {
+  width: 100%;
+  appearance: none;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-orange);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(249,115,22,0.35);
+  transition: var(--transition);
+}
+
+.filter-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.filter-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
