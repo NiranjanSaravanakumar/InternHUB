@@ -1,16 +1,195 @@
-# React + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+# 🎨 InternHUB — Frontend
 
-Currently, two official plugins are available:
+### React 19 + Vite · Internship Skill Matching Platform
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-purple?logo=vite)](https://vite.dev)
+[![React Router](https://img.shields.io/badge/React%20Router-v6-red?logo=reactrouter)](https://reactrouter.com)
+[![Axios](https://img.shields.io/badge/Axios-1.x-blue)](https://axios-http.com)
 
-## React Compiler
+</div>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 📁 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```
+frontend/
+├── public/                      ← Static assets (favicon)
+├── src/
+│   ├── assets/                  ← Images / SVGs
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Navbar.jsx       ← Sticky navbar with glassmorphism scroll effect
+│   │   │   └── Navbar.css
+│   │   └── student/
+│   │       ├── InternshipCard.jsx   ← Match score badge, skill tags, apply button
+│   │       ├── InternshipCard.css
+│   │       ├── FilterSidebar.jsx    ← Domain, location, stipend, match % sliders
+│   │       └── FilterSidebar.css
+│   ├── context/
+│   │   └── AuthContext.jsx      ← JWT state, login/logout, role helpers
+│   ├── pages/
+│   │   ├── LandingPage.jsx      ← Marketing landing (7 sections + footer)
+│   │   ├── LandingPage.css
+│   │   ├── auth/
+│   │   │   ├── LoginPage.jsx            ← Split-screen login
+│   │   │   ├── RegisterStudentPage.jsx  ← 2-step student registration
+│   │   │   ├── RegisterRecruiterPage.jsx
+│   │   │   └── AuthPages.css
+│   │   ├── student/
+│   │   │   ├── StudentDashboard.jsx     ← Match results + Top 3 + filters
+│   │   │   ├── StudentDashboard.css
+│   │   │   ├── ProfileSetup.jsx         ← Completion ring, skills, resume
+│   │   │   ├── ProfileSetup.css
+│   │   │   ├── MyApplications.jsx
+│   │   │   └── MyApplications.css
+│   │   └── recruiter/
+│   │       ├── RecruiterDashboard.jsx   ← Post/manage internships
+│   │       ├── RecruiterDashboard.css
+│   │       ├── PostInternship.jsx       ← 3-section internship form
+│   │       ├── PostInternship.css
+│   │       ├── ViewApplicants.jsx       ← Applicants ranked by match score
+│   │       └── ViewApplicants.css
+│   ├── services/
+│   │   ├── api.js               ← Axios base with JWT interceptor + 401 redirect
+│   │   ├── authService.js       ← Login, register API calls
+│   │   ├── studentService.js    ← Profile, matches, apply, applications
+│   │   └── recruiterService.js  ← Post, list, delete, view applicants
+│   ├── App.jsx                  ← Router setup + ProtectedRoute / PublicOnlyRoute
+│   ├── main.jsx                 ← React DOM entry point
+│   └── index.css                ← Global design system (tokens, buttons, cards...)
+├── index.html                   ← HTML entry with SEO meta tags
+├── vite.config.js
+├── .env                         ← VITE_API_URL
+├── .gitignore
+└── README.md
+```
+
+---
+
+## ⚡ Getting Started
+
+### Prerequisites
+
+- Node.js **18+** (`node -v`)
+- npm **9+** (`npm -v`)
+- Backend running at `http://localhost:8080` (see `../backend/README.md`)
+
+### Install & Run
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+→ Opens at **http://localhost:5173**
+
+### Build for Production
+
+```bash
+npm run build       # Outputs to dist/
+npm run preview     # Preview production build locally
+```
+
+---
+
+## 🌐 Pages & Routes
+
+| Route | Page | Access |
+|-------|------|--------|
+| `/` | Landing Page | Public |
+| `/login` | Login | Public (redirects if logged in) |
+| `/register/student` | Student Registration (2-step) | Public |
+| `/register/recruiter` | Recruiter Registration | Public |
+| `/student/dashboard` | Match Dashboard | `CANDIDATE` only |
+| `/student/profile` | Profile Setup | `CANDIDATE` only |
+| `/student/applications` | My Applications | `CANDIDATE` only |
+| `/recruiter/dashboard` | Recruiter Dashboard | `RECRUITER` only |
+| `/recruiter/post` | Post Internship | `RECRUITER` only |
+| `/recruiter/applicants/:id` | View Applicants | `RECRUITER` only |
+
+---
+
+## 🔐 Authentication Flow
+
+```
+Login / Register
+      ↓
+  AuthContext.login(response)
+      ↓
+  localStorage: token + user
+      ↓
+  api.js interceptor adds
+  "Authorization: Bearer <token>"
+  to every request
+      ↓
+  401 → auto logout + redirect /login
+```
+
+---
+
+## 🎨 Design System
+
+Defined in [`src/index.css`](./src/index.css) using CSS variables.
+
+```css
+/* 60% — Dominant Backgrounds */
+--color-white:     #FFFFFF
+--color-bg-soft:   #FFF7ED
+
+/* 30% — Text & Structure */
+--color-text-primary:    #111827
+--color-text-secondary:  #6B7280
+--color-border:          #E5E7EB
+
+/* 10% — Accent / CTA */
+--color-orange:       #F97316
+--color-orange-dark:  #EA580C
+--color-orange-light: #FFEDD5
+```
+
+**Typography:** Plus Jakarta Sans (Google Fonts)
+
+### Available CSS Utilities
+
+| Class | Description |
+|-------|-------------|
+| `.btn-primary` | Orange filled button |
+| `.btn-outline` | Border button |
+| `.btn-outline-orange` | Orange border + text |
+| `.card` | White card with hover lift |
+| `.badge-orange/green/blue/gray` | Colored badge chips |
+| `.form-input`, `.form-select` | Styled inputs |
+| `.animate-fadeInUp`, `.animate-float` | Keyframe animations |
+| `.skeleton` | Loading shimmer effect |
+
+---
+
+## 📦 Dependencies
+
+```json
+{
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0",
+  "react-router-dom": "^7.x",
+  "axios": "^1.x",
+  "react-hot-toast": "^2.x",
+  "lucide-react": "^0.x"
+}
+```
+
+---
+
+## 🔧 Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_URL` | `http://localhost:8080/api` | Spring Boot backend base URL |
+
+Edit [`.env`](./.env) to change the backend URL.
