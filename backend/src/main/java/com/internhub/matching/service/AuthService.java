@@ -43,13 +43,15 @@ public class AuthService {
         user = userRepository.save(user);
 
         // 2. Create a minimal StudentProfile row (matching fields filled later via /profile)
-        LocalDate dob = LocalDate.parse(req.getDateOfBirth());
+        LocalDate dob = (req.getDateOfBirth() != null && !req.getDateOfBirth().isBlank())
+                ? LocalDate.parse(req.getDateOfBirth())
+                : null;
         StudentProfile profile = StudentProfile.builder()
                 .user(user)
                 .dob(dob)
-                .collegeName(req.getCollegeName())
-                .degree(req.getDegree())
-                .department(req.getDepartment())
+                .collegeName(req.getCollegeName() != null ? req.getCollegeName() : "")
+                .degree(req.getDegree() != null ? req.getDegree() : "")
+                .department(req.getDepartment() != null ? req.getDepartment() : "")
                 .passoutYear(req.getPassoutYear())
                 // matching fields — empty until student completes profile
                 .cgpa(0.0)

@@ -80,6 +80,16 @@ input, textarea, select {
   font-family: inherit;
 }
 
+/* Hide spin buttons on number inputs globally */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 img {
   max-width: 100%;
   display: block;

@@ -184,7 +184,7 @@ export default function RegisterPage() {
     try {
       if (role === 'RECRUITER') {
         const res = await authService.registerRecruiter({
-          name, email, password: pw, phone,
+          name, email, password: pw, phoneNumber: phone,
           companyName: company, employeeRole: empRole,
         });
         login(res.data);
@@ -192,7 +192,7 @@ export default function RegisterPage() {
         navigate('/recruiter/dashboard');
       } else {
         const res = await authService.registerStudent({
-          name, email, password: pw, phone,
+          name, email, password: pw, phoneNumber: phone,
           dateOfBirth: dob, collegeName: college,
           degree, department: dept,
           passoutYear: Number(passYear),
