@@ -1,0 +1,46 @@
+# ─── Maven Build Output ─────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ─── Compiled Classes ───────────────────────────────────────
+*.class
+
+# ─── Package Files ──────────────────────────────────────────
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ─── Uploaded Files (resume storage) ────────────────────────
+uploads/
+
+# ─── Environment & Secrets ──────────────────────────────────
+.env
+application-prod.properties
+application-local.properties
+
+# ─── IDE ────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.classpath
+*.project
+.settings/
+
+# ─── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Maven Wrapper Downloaded Repo ──────────────────────────
+.mvn/repository/

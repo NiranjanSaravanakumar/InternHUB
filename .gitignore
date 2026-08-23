@@ -1,0 +1,30 @@
+# ─── OS & Editor ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# ─── Logs ──────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Environment Secrets ───────────────────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ─── Frontend ──────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ─── Backend ───────────────────────────────────────────────
+backend/target/
+backend/uploads/
+backend/*.jar
+backend/*.war
+backend/.mvn/repository/

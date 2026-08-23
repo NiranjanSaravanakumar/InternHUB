@@ -1,0 +1,6 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) — Maven Wrapper Script
+# ----------------------------------------------------------------------------
+MAVEN_WRAPPER_JAR="$(dirname "$0")/.mvn/wrapper/maven-wrapper.jar"
+exec java -jar "$MAVEN_WRAPPER_JAR" "$@"
