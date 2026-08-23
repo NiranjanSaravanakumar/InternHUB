@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { studentService } from '../../services/studentService';
-import { Plus, X, Upload, CheckCircle, User } from 'lucide-react';
+import { Plus, X, Upload, CheckCircle, FileText, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './ProfileSetup.css';
 
@@ -14,7 +14,9 @@ export default function ProfileSetup() {
     cgpa: '', skills: [], preferredDomain: '', experienceMonths: 0, preferredLocation: ''
   });
   const [skillInput, setSkillInput] = useState('');
-  const [resume, setResume] = useState(null);
+  const [resume, setResume] = useState(null);            // newly selected file
+  const [existingResumeUrl, setExistingResumeUrl] = useState(null); // from backend
+  const [showDropzone, setShowDropzone] = useState(false); // toggle for replace flow
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
@@ -43,6 +45,8 @@ export default function ProfileSetup() {
           experienceMonths: d.experienceMonths ?? 0,
           preferredLocation: d.preferredLocation || ''
         });
+        // Persist the existing resume URL so we can show the "Current File" UI
+        if (d.resumeUrl) setExistingResumeUrl(d.resumeUrl);
       }
     }).catch(() => {});
   }, []);
@@ -95,9 +99,18 @@ export default function ProfileSetup() {
     <div className="profile-setup">
       <div className="container profile-setup__inner">
         <div className="profile-setup__header">
-          <div>
-            <h1>Complete Your Profile</h1>
-            <p>This information powers your match score. The more you fill, the better your recommendations.</p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+            <button 
+              type="button" 
+              onClick={() => navigate('/student/profile')} 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0 0 0', color: 'inherit' }}
+            >
+              <ArrowLeft size={28} />
+            </button>
+            <div>
+              <h1 style={{ marginTop: 0 }}>Complete Your Profile</h1>
+              <p>This information powers your match score. The more you fill, the better your recommendations.</p>
+            </div>
           </div>
           <div className="profile-setup__completion">
             <div className="profile-setup__completion-ring">
@@ -225,35 +238,87 @@ export default function ProfileSetup() {
           {/* Resume Upload */}
           <div className="profile-setup__section">
             <h3 className="profile-setup__section-title">
-              <span className="profile-setup__section-num">04</span> Resume Upload
+              <span className="profile-setup__section-num">04</span>
+              Resume
+              {(existingResumeUrl || resume) && (
+                <span className="profile-setup__section-badge" style={{ color: '#15803D', background: '#DCFCE7', borderColor: '#86EFAC' }}>
+                  ✓ Uploaded
+                </span>
+              )}
             </h3>
-            <div
-              className={`profile-setup__upload ${resume ? 'profile-setup__upload--active' : ''}`}
-              onClick={() => document.getElementById('resume-upload').click()}
-            >
-              <input
-                id="resume-upload"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                style={{ display: 'none' }}
-                onChange={e => setResume(e.target.files[0])}
-              />
-              {resume ? (
-                <div className="profile-setup__upload-done">
-                  <CheckCircle size={24} />
+
+            {/* Hidden file input — always present */}
+            <input
+              id="resume-upload"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              style={{ display: 'none' }}
+              onChange={e => {
+                setResume(e.target.files[0] || null);
+                setShowDropzone(false); // collapse dropzone after selection
+              }}
+            />
+
+            {/* ── CASE A: Newly selected file (overrides everything) ── */}
+            {resume && (
+              <div className="ps-resume-current">
+                <div className="ps-resume-current__left">
+                  <CheckCircle size={20} color="#15803D" />
                   <div>
-                    <p className="profile-setup__upload-filename">{resume.name}</p>
-                    <p className="profile-setup__upload-size">{(resume.size / 1024).toFixed(0)} KB</p>
+                    <p className="ps-resume-current__name">{resume.name}</p>
+                    <p className="ps-resume-current__meta">{(resume.size / 1024).toFixed(0)} KB · Ready to save</p>
                   </div>
                 </div>
-              ) : (
-                <>
-                  <Upload size={28} />
-                  <p>Click to upload your resume</p>
-                  <span>PDF, DOC, DOCX — Max 5MB</span>
-                </>
-              )}
-            </div>
+                <button
+                  type="button"
+                  className="ps-resume-current__replace-btn"
+                  onClick={() => { setResume(null); setShowDropzone(true); }}
+                >
+                  <X size={14} /> Remove
+                </button>
+              </div>
+            )}
+
+            {/* ── CASE B: Existing resume from backend, no new file chosen ── */}
+            {!resume && existingResumeUrl && !showDropzone && (
+              <div className="ps-resume-current">
+                <div className="ps-resume-current__left">
+                  <FileText size={20} color="#15803D" />
+                  <div>
+                    <p className="ps-resume-current__name">Resume Uploaded</p>
+                    <p className="ps-resume-current__meta">Saved from registration · ready for applications</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="ps-resume-current__replace-btn"
+                  onClick={() => setShowDropzone(true)}
+                >
+                  ↑ Replace Resume
+                </button>
+              </div>
+            )}
+
+            {/* ── CASE C: No resume at all OR user clicked Replace ── */}
+            {!resume && (!existingResumeUrl || showDropzone) && (
+              <div
+                className="profile-setup__upload"
+                onClick={() => document.getElementById('resume-upload').click()}
+              >
+                <Upload size={28} />
+                <p>{existingResumeUrl ? 'Choose a new file to replace your current resume' : 'Click to upload your resume'}</p>
+                <span>PDF, DOC, DOCX — Max 5MB</span>
+                {showDropzone && existingResumeUrl && (
+                  <button
+                    type="button"
+                    className="ps-resume-cancel-replace"
+                    onClick={e => { e.stopPropagation(); setShowDropzone(false); }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <button type="submit" className="btn btn-primary btn-lg" disabled={loading || saved}>

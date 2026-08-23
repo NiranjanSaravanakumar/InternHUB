@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { studentService } from '../../services/studentService';
 import {
   User, Mail, Phone, MapPin, GraduationCap, Calendar,
   Briefcase, Star, Clock, FileText, Edit3, Download,
-  CheckCircle, BookOpen, Target, Award
+  CheckCircle, BookOpen, Target, Award, ArrowLeft
 } from 'lucide-react';
 import './StudentProfilePage.css';
 
@@ -13,6 +13,7 @@ export default function StudentProfilePage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     studentService.getProfile()
@@ -51,6 +52,10 @@ export default function StudentProfilePage() {
   return (
     <div className="sp">
       <div className="container sp__inner">
+
+        <button onClick={() => navigate('/student/dashboard')} className="p-2 mb-4 bg-white border border-gray-200 rounded-full hover:bg-gray-50 hover:shadow-sm text-gray-600 transition-all" style={{ display: 'flex', width: 'fit-content' }}>
+          <ArrowLeft size={20} />
+        </button>
 
         {/* ── Hero Card ── */}
         <div className="sp__hero">
