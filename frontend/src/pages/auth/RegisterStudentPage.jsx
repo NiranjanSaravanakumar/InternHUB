@@ -2,45 +2,69 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
-import { Briefcase, Eye, EyeOff, GraduationCap } from 'lucide-react';
+import { Briefcase, Eye, EyeOff, GraduationCap, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 
 const DEGREES = ['B.Tech', 'M.Tech', 'BCA', 'MCA', 'B.Sc', 'M.Sc', 'MBA', 'BBA', 'B.Com', 'Other'];
 const DEPARTMENTS = ['Computer Science (CSE)', 'Information Technology (IT)', 'Electronics (ECE)', 'Electrical (EEE)', 'Mechanical', 'Civil', 'Data Science', 'AI & ML', 'Other'];
 const YEARS = Array.from({ length: 16 }, (_, i) => 2015 + i);
+const EMPLOYEE_ROLES = ['HR Manager', 'Tech Lead', 'Software Engineer', 'CTO', 'Founder', 'Talent Acquisition', 'Engineering Manager', 'Product Manager', 'Other'];
 
 export default function RegisterStudentPage() {
+  const [registerRole, setRegisterRole] = useState('STUDENT');
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: '', email: '', password: '', phone: '', address: '',
-    dateOfBirth: '', collegeName: '', degree: '', department: '', passoutYear: ''
+    dateOfBirth: '', collegeName: '', degree: '', department: '', passoutYear: '',
+    companyName: '', employeeRole: ''
   });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const isRecruiter = registerRole === 'RECRUITER';
+
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleRoleSwitch = (role) => {
+    setRegisterRole(role);
+    setStep(1);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step === 1) { setStep(2); return; }
+    if (!isRecruiter && step === 1) { setStep(2); return; }
     setLoading(true);
     try {
-      const res = await authService.registerStudent({
-        ...form,
-        passoutYear: Number(form.passoutYear)
-      });
-      login(res.data);
-      toast.success('Account created! Complete your profile to get matched.');
-      navigate('/student/profile');
+      if (isRecruiter) {
+        const res = await authService.registerRecruiter({
+          name: form.name, email: form.email, password: form.password,
+          phone: form.phone, address: form.address,
+          companyName: form.companyName, employeeRole: form.employeeRole,
+        });
+        login(res.data);
+        toast.success('Account created! Start posting internships.');
+        navigate('/recruiter/dashboard');
+      } else {
+        const res = await authService.registerStudent({
+          ...form,
+          passoutYear: Number(form.passoutYear)
+        });
+        login(res.data);
+        toast.success('Account created! Complete your profile to get matched.');
+        navigate('/student/profile');
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const totalSteps = isRecruiter ? 1 : 2;
+  const progressWidth = isRecruiter ? 100 : step * 50;
 
   return (
     <div className="auth-page">
@@ -49,39 +73,79 @@ export default function RegisterStudentPage() {
           <div className="auth-page__logo"><Briefcase size={22} /></div>
           <span>Intern<b>HUB</b></span>
         </div>
-        <div className="auth-page__icon-big"><GraduationCap size={64} /></div>
+        <div className="auth-page__icon-big">
+          {isRecruiter ? <Building2 size={64} /> : <GraduationCap size={64} />}
+        </div>
         <h2 className="auth-page__tagline">
-          Start your<br /><span>journey today.</span>
+          {isRecruiter
+            ? <><span>Find pre-matched</span><br />talent instantly.</>
+            : <>Start your<br /><span>journey today.</span></>}
         </h2>
         <p className="auth-page__desc">
-          Create your free account and let our algorithm match you with the perfect internship. It takes less than 2 minutes.
+          {isRecruiter
+            ? 'Post your internship and our algorithm will surface only the most qualified, skill-matched candidates — ranked by compatibility score.'
+            : 'Create your free account and let our algorithm match you with the perfect internship. It takes less than 2 minutes.'}
         </p>
-        <div className="auth-page__steps-preview">
-          {['Create Account', 'Build Profile', 'Get Matched'].map((s, i) => (
-            <div key={s} className={`auth-page__step-item ${i < step ? 'done' : i === step - 1 ? 'active' : ''}`}>
-              <div className="auth-page__step-dot">{i < step ? '✓' : i + 1}</div>
-              <span>{s}</span>
-            </div>
-          ))}
-        </div>
+
+        {isRecruiter ? (
+          <div className="auth-page__recruiter-stats">
+            {[['500+', 'Companies Trust Us'], ['25K+', 'Active Students'], ['95%', 'Match Accuracy']].map(([v, l]) => (
+              <div key={l} className="auth-page__stat">
+                <div className="auth-page__stat-val">{v}</div>
+                <div className="auth-page__stat-label">{l}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="auth-page__steps-preview">
+            {['Create Account', 'Build Profile', 'Get Matched'].map((s, i) => (
+              <div key={s} className={`auth-page__step-item ${i < step ? 'done' : i === step - 1 ? 'active' : ''}`}>
+                <div className="auth-page__step-dot">{i < step ? '✓' : i + 1}</div>
+                <span>{s}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="auth-page__right">
         <div className="auth-form">
           <div className="auth-form__header">
             <h1 className="auth-form__title">
-              {step === 1 ? 'Create Your Account' : 'Academic Details'}
+              {isRecruiter ? 'Create Company Account' : (step === 1 ? 'Create Your Account' : 'Academic Details')}
             </h1>
             <p className="auth-form__sub">
-              Step {step} of 2 · Student Registration
+              Step {step} of {totalSteps} · {isRecruiter ? 'Recruiter' : 'Student'} Registration
             </p>
+
+            {/* Role Selection Toggle */}
+            <div className="auth-role-toggle" role="group" aria-label="Registration type">
+              <button
+                type="button"
+                id="toggle-candidate"
+                className={`auth-role-toggle__btn${registerRole === 'STUDENT' ? ' active' : ''}`}
+                onClick={() => handleRoleSwitch('STUDENT')}
+              >
+                🎓 Candidate
+              </button>
+              <button
+                type="button"
+                id="toggle-recruiter"
+                className={`auth-role-toggle__btn${registerRole === 'RECRUITER' ? ' active' : ''}`}
+                onClick={() => handleRoleSwitch('RECRUITER')}
+              >
+                🏢 Recruiter
+              </button>
+            </div>
+
             <div className="auth-form__progress">
-              <div className="auth-form__progress-fill" style={{ width: `${step * 50}%` }} />
+              <div className="auth-form__progress-fill" style={{ width: `${progressWidth}%` }} />
             </div>
           </div>
 
           <form onSubmit={handleSubmit}>
-            {step === 1 && (
+            {/* ── STUDENT STEP 1 ───────────────────────────────── */}
+            {!isRecruiter && step === 1 && (
               <>
                 <div className="auth-form__row">
                   <div className="form-group">
@@ -127,7 +191,8 @@ export default function RegisterStudentPage() {
               </>
             )}
 
-            {step === 2 && (
+            {/* ── STUDENT STEP 2 ───────────────────────────────── */}
+            {!isRecruiter && step === 2 && (
               <>
                 <div className="form-group">
                   <label className="form-label">College / University Name</label>
@@ -163,14 +228,79 @@ export default function RegisterStudentPage() {
               </>
             )}
 
+            {/* ── RECRUITER FORM (single step) ─────────────────── */}
+            {isRecruiter && (
+              <>
+                <div className="auth-form__row">
+                  <div className="form-group">
+                    <label className="form-label">Your Name</label>
+                    <input className="form-input" placeholder="Rahul Mehta" value={form.name}
+                      onChange={e => update('name', e.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Company Name</label>
+                    <input className="form-input" placeholder="TechNova Solutions" value={form.companyName}
+                      onChange={e => update('companyName', e.target.value)} required />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Role at Company</label>
+                  <select className="form-input form-select" value={form.employeeRole}
+                    onChange={e => update('employeeRole', e.target.value)} required>
+                    <option value="">Select your role</option>
+                    {EMPLOYEE_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Work Email</label>
+                  <input type="email" className="form-input" placeholder="you@company.com" value={form.email}
+                    onChange={e => update('email', e.target.value)} required />
+                </div>
+                <div className="auth-form__row">
+                  <div className="form-group">
+                    <label className="form-label">Phone Number</label>
+                    <input className="form-input" placeholder="+91 98765 43210" value={form.phone}
+                      onChange={e => update('phone', e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Office Address</label>
+                    <input className="form-input" placeholder="City, State" value={form.address}
+                      onChange={e => update('address', e.target.value)} />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <div className="auth-form__pw-wrapper">
+                    <input type={showPw ? 'text' : 'password'} className="form-input"
+                      placeholder="Create a strong password (min 8 chars)"
+                      value={form.password} onChange={e => update('password', e.target.value)}
+                      minLength={8} required />
+                    <button type="button" className="auth-form__pw-toggle" onClick={() => setShowPw(!showPw)}>
+                      {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
             <div className="auth-form__nav">
-              {step === 2 && (
+              {!isRecruiter && step === 2 && (
                 <button type="button" className="btn btn-outline" onClick={() => setStep(1)}>
                   ← Back
                 </button>
               )}
-              <button type="submit" className={`btn btn-primary ${step === 1 ? 'btn-full' : ''}`} disabled={loading}>
-                {loading ? 'Creating Account...' : step === 1 ? 'Continue →' : 'Create Account'}
+              <button
+                type="submit"
+                className={`btn btn-primary ${(isRecruiter || step === 1) ? 'btn-full' : ''}`}
+                disabled={loading}
+              >
+                {loading
+                  ? 'Creating Account...'
+                  : isRecruiter
+                    ? 'Create Recruiter Account'
+                    : step === 1
+                      ? 'Continue →'
+                      : 'Create Account'}
               </button>
             </div>
           </form>
