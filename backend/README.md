@@ -132,6 +132,13 @@ app.jwt.expiration=86400000      # 24 hours in ms
 
 > 💡 First run downloads ~50 MB of Maven dependencies. Subsequent runs are fast.
 
+### 4 — Stopping the Application
+
+To stop the Spring Boot server:
+1. Go to the terminal window where the server is running.
+2. Press `Ctrl + C` on your keyboard.
+3. If prompted with `Terminate batch job (Y/N)?`, type `Y` and press `Enter`.
+
 ---
 
 ## 🗄️ Database Schema

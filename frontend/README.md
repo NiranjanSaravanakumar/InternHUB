@@ -90,6 +90,13 @@ npm run dev
 
 → Opens at **http://localhost:5173**
 
+### Stopping the Application
+
+To stop the Vite development server:
+1. Go to the terminal window where the server is running.
+2. Press `Ctrl + C` on your keyboard.
+3. If prompted with `Terminate batch job (Y/N)?`, type `Y` and press `Enter`.
+
 ### Build for Production
 
 ```bash
