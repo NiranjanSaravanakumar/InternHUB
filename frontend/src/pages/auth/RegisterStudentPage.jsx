@@ -15,12 +15,47 @@ export default function RegisterStudentPage() {
   const [registerRole, setRegisterRole] = useState('STUDENT');
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    name: '', email: '', password: '', phone: '', address: '',
+    name: '', email: '', password: '', retypePassword: '', phone: '', address: '',
     dateOfBirth: '', collegeName: '', degree: '', department: '', passoutYear: '',
     companyName: '', employeeRole: ''
   });
   const [showPw, setShowPw] = useState(false);
+  const [showRetypePw, setShowRetypePw] = useState(false);
+  const [dobError, setDobError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Max allowed DoB = today minus 15 years
+  const maxDob = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 15);
+    return d.toISOString().split('T')[0];
+  })();
+
+  const handleDobChange = (val) => {
+    update('dateOfBirth', val);
+    if (val && val > maxDob) {
+      setDobError('You must be at least 15 years old.');
+    } else {
+      setDobError('');
+    }
+  };
+
+  const handlePhoneDigits = (val) => {
+    // Strip non-digits, cap at 10
+    const digits = val.replace(/\D/g, '').slice(0, 10);
+    update('phone', digits);
+  };
+
+  const PW_RULES = [
+    { label: '8–16 characters',   test: (p) => p.length >= 8 && p.length <= 16 },
+    { label: '1 Uppercase letter', test: (p) => /[A-Z]/.test(p) },
+    { label: '1 Lowercase letter', test: (p) => /[a-z]/.test(p) },
+    { label: '1 Digit',           test: (p) => /[0-9]/.test(p) },
+    { label: '1 Symbol (!@#…)',   test: (p) => /[^A-Za-z0-9]/.test(p) },
+  ];
+  const pwValid = PW_RULES.every(r => r.test(form.password));
+  const pwMatch = form.password === form.retypePassword && form.retypePassword !== '';
+  const step2CanSubmit = pwValid && pwMatch;
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -156,7 +191,9 @@ export default function RegisterStudentPage() {
                   <div className="form-group">
                     <label className="form-label">Date of Birth</label>
                     <input type="date" className="form-input" value={form.dateOfBirth}
-                      onChange={e => update('dateOfBirth', e.target.value)} required />
+                      max={maxDob}
+                      onChange={e => handleDobChange(e.target.value)} required />
+                    {dobError && <span className="form-error">{dobError}</span>}
                   </div>
                 </div>
                 <div className="form-group">
@@ -167,25 +204,27 @@ export default function RegisterStudentPage() {
                 <div className="auth-form__row">
                   <div className="form-group">
                     <label className="form-label">Phone Number</label>
-                    <input className="form-input" placeholder="+91 98765 43210"
-                      value={form.phone} onChange={e => update('phone', e.target.value)} required />
+                    <div className="auth-form__phone-wrapper">
+                      <span className="auth-form__phone-prefix">+91</span>
+                      <input
+                        className="form-input auth-form__phone-input"
+                        placeholder="98765 43210"
+                        inputMode="numeric"
+                        value={form.phone}
+                        onChange={e => handlePhoneDigits(e.target.value)}
+                        minLength={10}
+                        maxLength={10}
+                        pattern="[0-9]{10}"
+                        required />
+                    </div>
+                    {form.phone.length > 0 && form.phone.length < 10 && (
+                      <span className="form-error">Enter exactly 10 digits.</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label className="form-label">Address</label>
                     <input className="form-input" placeholder="City, State"
                       value={form.address} onChange={e => update('address', e.target.value)} />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Password</label>
-                  <div className="auth-form__pw-wrapper">
-                    <input type={showPw ? 'text' : 'password'} className="form-input"
-                      placeholder="Create a strong password (min 8 chars)"
-                      value={form.password} onChange={e => update('password', e.target.value)}
-                      minLength={8} required />
-                    <button type="button" className="auth-form__pw-toggle" onClick={() => setShowPw(!showPw)}>
-                      {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
                   </div>
                 </div>
               </>
@@ -224,6 +263,48 @@ export default function RegisterStudentPage() {
                     <option value="">Select Year</option>
                     {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
+                </div>
+
+                {/* ── Security Fields ── */}
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <div className="auth-form__pw-wrapper">
+                    <input type={showPw ? 'text' : 'password'} className="form-input"
+                      placeholder="Create a strong password"
+                      value={form.password} onChange={e => update('password', e.target.value)}
+                      required />
+                    <button type="button" className="auth-form__pw-toggle" onClick={() => setShowPw(!showPw)}>
+                      {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Retype Password</label>
+                  <div className="auth-form__pw-wrapper">
+                    <input type={showRetypePw ? 'text' : 'password'} className="form-input"
+                      placeholder="Confirm your password"
+                      value={form.retypePassword} onChange={e => update('retypePassword', e.target.value)}
+                      required />
+                    <button type="button" className="auth-form__pw-toggle" onClick={() => setShowRetypePw(!showRetypePw)}>
+                      {showRetypePw ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── Neo-Brutalist Password Checklist ── */}
+                <div className="pw-checklist">
+                  {PW_RULES.map(rule => (
+                    <div key={rule.label} className={`pw-checklist__item ${rule.test(form.password) ? 'pass' : 'fail'}`}>
+                      <span className="pw-checklist__icon">{rule.test(form.password) ? '✔' : '✘'}</span>
+                      <span className="pw-checklist__label">{rule.label}</span>
+                    </div>
+                  ))}
+                  {form.retypePassword !== '' && (
+                    <div className={`pw-checklist__item ${pwMatch ? 'pass' : 'fail'}`}>
+                      <span className="pw-checklist__icon">{pwMatch ? '✔' : '✘'}</span>
+                      <span className="pw-checklist__label">Passwords match</span>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -292,7 +373,7 @@ export default function RegisterStudentPage() {
               <button
                 type="submit"
                 className={`btn btn-primary ${(isRecruiter || step === 1) ? 'btn-full' : ''}`}
-                disabled={loading}
+                disabled={loading || (!isRecruiter && step === 2 && !step2CanSubmit)}
               >
                 {loading
                   ? 'Creating Account...'

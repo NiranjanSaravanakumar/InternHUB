@@ -6,6 +6,7 @@ import Navbar from './components/common/Navbar';
 // Pages
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 import RegisterStudentPage from './pages/auth/RegisterStudentPage';
 import RegisterRecruiterPage from './pages/auth/RegisterRecruiterPage';
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -45,6 +46,7 @@ function AppRoutes() {
 
         {/* Auth (redirect if already logged in) */}
         <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
+        <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
         <Route path="/register/student" element={<PublicOnlyRoute><RegisterStudentPage /></PublicOnlyRoute>} />
         <Route path="/register/recruiter" element={<PublicOnlyRoute><RegisterRecruiterPage /></PublicOnlyRoute>} />
 
@@ -87,12 +89,14 @@ export default function App() {
           toastOptions={{
             duration: 4000,
             style: {
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: '0.88rem',
-              fontWeight: 500,
-              borderRadius: '12px',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+              fontFamily: "'Manrope', 'Plus Jakarta Sans', sans-serif",
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              borderRadius: '0px',
+              border: '2px solid #000000',
+              boxShadow: '4px 4px 0 0 #000000',
+              background: '#ffffff',
+              color: '#000000',
             },
             success: {
               iconTheme: { primary: '#F97316', secondary: '#fff' },
