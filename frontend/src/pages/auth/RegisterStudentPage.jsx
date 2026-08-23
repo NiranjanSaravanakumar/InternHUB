@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
-import { Briefcase, Eye, EyeOff, GraduationCap, Building2, ArrowLeft } from 'lucide-react';
+import { Briefcase, Eye, EyeOff, GraduationCap, Building2, ArrowLeft, UploadCloud, CheckCircle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 
@@ -23,6 +23,8 @@ export default function RegisterStudentPage() {
   const [showRetypePw, setShowRetypePw] = useState(false);
   const [dobError, setDobError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resume, setResume] = useState(null);
+  const [resumeDragOver, setResumeDragOver] = useState(false);
 
   // Max allowed DoB = today minus 15 years
   const maxDob = (() => {
@@ -55,7 +57,7 @@ export default function RegisterStudentPage() {
   ];
   const pwValid = PW_RULES.every(r => r.test(form.password));
   const pwMatch = form.password === form.retypePassword && form.retypePassword !== '';
-  const step2CanSubmit = pwValid && pwMatch;
+  const step2CanSubmit = pwValid && pwMatch && resume !== null;
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -68,6 +70,18 @@ export default function RegisterStudentPage() {
     setStep(1);
   };
 
+  const handleResumeFile = (file) => {
+    if (!file) return;
+    const allowed = ['application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowed.includes(file.type)) {
+      toast.error('Only PDF, DOC, or DOCX files are accepted.');
+      return;
+    }
+    setResume(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isRecruiter && step === 1) { setStep(2); return; }
@@ -76,19 +90,33 @@ export default function RegisterStudentPage() {
       if (isRecruiter) {
         const res = await authService.registerRecruiter({
           name: form.name, email: form.email, password: form.password,
-          phone: form.phone, address: form.address,
+          phoneNumber: form.phone || "0000000000", address: form.address,
           companyName: form.companyName, employeeRole: form.employeeRole,
         });
         login(res.data);
         toast.success('Account created! Start posting internships.');
         navigate('/recruiter/dashboard');
       } else {
+        // Step 1: Register student account (JSON)
         const res = await authService.registerStudent({
           ...form,
+          phoneNumber: form.phone || "0000000000",
           passoutYear: Number(form.passoutYear)
         });
+        // Step 2: Store JWT so the upload call can authenticate
         login(res.data);
-        toast.success('Account created! Complete your profile to get matched.');
+        // Step 3: Upload resume using the fresh JWT
+        if (resume) {
+          try {
+            const { studentService } = await import('../../services/studentService');
+            await studentService.uploadResume(resume);
+            toast.success('Account created & resume uploaded! Complete your profile to get matched.');
+          } catch {
+            toast.success('Account created! Resume upload failed — you can re-upload from your profile.');
+          }
+        } else {
+          toast.success('Account created! Complete your profile to get matched.');
+        }
         navigate('/student/profile');
       }
     } catch (err) {
@@ -305,6 +333,52 @@ export default function RegisterStudentPage() {
                       <span className="pw-checklist__icon">{pwMatch ? '✔' : '✘'}</span>
                       <span className="pw-checklist__label">Passwords match</span>
                     </div>
+                  )}
+                </div>
+
+                {/* ── Resume Upload Dropzone ── */}
+                <div className="resume-upload-label">Resume</div>
+                <div
+                  className={`resume-dropzone${resumeDragOver ? ' resume-dropzone--drag' : ''}${resume ? ' resume-dropzone--active' : ''}`}
+                  onClick={() => !resume && document.getElementById('resume-file-input').click()}
+                  onDragOver={(e) => { e.preventDefault(); setResumeDragOver(true); }}
+                  onDragLeave={() => setResumeDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setResumeDragOver(false);
+                    handleResumeFile(e.dataTransfer.files[0]);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload resume"
+                  onKeyDown={(e) => e.key === 'Enter' && !resume && document.getElementById('resume-file-input').click()}
+                >
+                  <input
+                    id="resume-file-input"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleResumeFile(e.target.files[0])}
+                  />
+                  {resume ? (
+                    <>
+                      <CheckCircle size={32} color="#16A34A" strokeWidth={2} />
+                      <p className="resume-dropzone__filename">{resume.name}</p>
+                      <button
+                        type="button"
+                        className="resume-dropzone__remove"
+                        onClick={(e) => { e.stopPropagation(); setResume(null); }}
+                        aria-label="Remove resume"
+                      >
+                        <X size={14} /> Remove
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud size={32} color="#F97316" strokeWidth={1.75} />
+                      <p className="resume-dropzone__text">Upload your Resume (PDF, DOCX)</p>
+                      <p className="resume-dropzone__hint">Drag & drop or click to browse</p>
+                    </>
                   )}
                 </div>
               </>

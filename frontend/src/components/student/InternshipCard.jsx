@@ -1,16 +1,16 @@
-import { MapPin, DollarSign, Zap, CheckCircle, Crown } from 'lucide-react';
+﻿import { MapPin, DollarSign, Zap, CheckCircle, Crown, Eye } from 'lucide-react';
 import './InternshipCard.css';
 
-export default function InternshipCard({ match, onApply, rank }) {
+export default function InternshipCard({ match, onView, rank }) {
   const {
-    internshipId, role, companyName, domain, location, stipend,
+    role, companyName, domain, location, stipend,
     requiredSkills, matchScore, matchedSkills,
-    missingSkills, alreadyApplied, minimumCgpa
+    alreadyApplied, minimumCgpa
   } = match;
 
   const isTopThree = rank <= 3;
   const scoreColor = matchScore >= 80 ? '#15803D' : matchScore >= 60 ? '#F97316' : '#6B7280';
-  const scoreBg = matchScore >= 80 ? '#DCFCE7' : matchScore >= 60 ? '#FFEDD5' : '#F3F4F6';
+  const scoreBg   = matchScore >= 80 ? '#DCFCE7' : matchScore >= 60 ? '#FFEDD5' : '#F3F4F6';
 
   return (
     <div className={`internship-card ${isTopThree ? 'internship-card--top' : ''}`}>
@@ -36,18 +36,12 @@ export default function InternshipCard({ match, onApply, rank }) {
       </div>
 
       <div className="internship-card__meta">
-        <span className="internship-card__meta-item">
-          <MapPin size={13} />
-          {location}
-        </span>
-        <span className="internship-card__meta-item">
-          <DollarSign size={13} />
-          ₹{stipend?.toLocaleString()}/mo
+        <span className="internship-card__meta-item"><MapPin size={13} />{location}</span>
+        <span className="internship-card__meta-item"><DollarSign size={13} />
+          Rs.{stipend?.toLocaleString()}/mo
         </span>
         {minimumCgpa > 0 && (
-          <span className="internship-card__meta-item">
-            Min CGPA: {minimumCgpa}
-          </span>
+          <span className="internship-card__meta-item">Min CGPA: {minimumCgpa}</span>
         )}
       </div>
 
@@ -79,15 +73,21 @@ export default function InternshipCard({ match, onApply, rank }) {
 
       <div className="internship-card__footer">
         <div className="internship-card__match-bar">
-          <div className="internship-card__match-bar-fill" style={{ width: `${matchScore}%`, background: scoreColor }} />
+          <div className="internship-card__match-bar-fill"
+            style={{ width: `${matchScore}%`, background: scoreColor }} />
         </div>
-        <button
-          className={`btn btn-sm ${alreadyApplied ? 'btn-ghost' : 'btn-primary'}`}
-          onClick={() => !alreadyApplied && onApply(internshipId)}
-          disabled={alreadyApplied}
-        >
-          {alreadyApplied ? '✓ Applied' : 'Apply Now'}
-        </button>
+        {alreadyApplied ? (
+          <button className="btn btn-sm btn-ghost" disabled>
+            checkmark Applied
+          </button>
+        ) : (
+          <button
+            className="btn btn-sm btn-primary internship-card__view-btn"
+            onClick={() => onView(match)}
+          >
+            <Eye size={13} /> View Details
+          </button>
+        )}
       </div>
     </div>
   );

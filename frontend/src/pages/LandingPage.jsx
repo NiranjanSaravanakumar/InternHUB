@@ -140,27 +140,7 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="companies__visual">
-              <div className="companies__card">
-                <div className="companies__card-header">
-                  <span className="badge badge-orange">3 Applicants</span>
-                  <span className="badge badge-green">React / Java</span>
-                </div>
-                <h4>Top Applicants</h4>
-                {[
-                  { name: 'Aditya Kumar', match: 92, cgpa: 8.7 },
-                  { name: 'Riya Sharma', match: 85, cgpa: 8.2 },
-                  { name: 'Sanjay Mehta', match: 74, cgpa: 7.9 },
-                ].map(a => (
-                  <div key={a.name} className="companies__applicant">
-                    <div className="companies__applicant-avatar">{a.name.charAt(0)}</div>
-                    <div style={{ flex: 1 }}>
-                      <p className="companies__applicant-name">{a.name}</p>
-                      <p className="companies__applicant-cgpa">CGPA: {a.cgpa}</p>
-                    </div>
-                    <div className="companies__applicant-match">{a.match}%</div>
-                  </div>
-                ))}
-              </div>
+              <img src="/iamge1234.jpeg" alt="Top Applicants" style={{ width: '100%', height: 'auto', borderRadius: '20px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' }} />
             </div>
           </div>
         </div>
@@ -214,9 +194,9 @@ export default function LandingPage() {
           </div>
           <div className="footer__links">
             {[
-              { title: 'Platform', links: ['Find Internships', 'How It Works', 'For Companies', 'Pricing'] },
+              { title: 'Platform', links: ['Find Internships', 'How It Works', 'For Companies'] },
               { title: 'Students', links: ['Register', 'Login', 'Profile Setup', 'My Applications'] },
-              { title: 'Company', links: ['About Us', 'Blog', 'Careers', 'Press Kit'] },
+              { title: 'Company', links: ['About Us', 'Blog'] },
             ].map(col => (
               <div key={col.title} className="footer__col">
                 <h4>{col.title}</h4>
@@ -226,7 +206,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="footer__bottom">
-          <p>© 2025 InternHUB. All rights reserved.</p>
+          <p>© 2026 InternHUB. All rights reserved.</p>
         </div>
       </footer>
     </div>

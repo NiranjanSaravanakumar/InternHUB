@@ -10,6 +10,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import RegisterStudentPage from './pages/auth/RegisterStudentPage';
 import RegisterRecruiterPage from './pages/auth/RegisterRecruiterPage';
 import StudentDashboard from './pages/student/StudentDashboard';
+import StudentProfilePage from './pages/student/StudentProfilePage';
 import ProfileSetup from './pages/student/ProfileSetup';
 import MyApplications from './pages/student/MyApplications';
 import RecruiterDashboard from './pages/recruiter/RecruiterDashboard';
@@ -55,6 +56,9 @@ function AppRoutes() {
           <ProtectedRoute requiredRole="STUDENT"><StudentDashboard /></ProtectedRoute>
         } />
         <Route path="/student/profile" element={
+          <ProtectedRoute requiredRole="STUDENT"><StudentProfilePage /></ProtectedRoute>
+        } />
+        <Route path="/student/profile/edit" element={
           <ProtectedRoute requiredRole="STUDENT"><ProfileSetup /></ProtectedRoute>
         } />
         <Route path="/student/applications" element={

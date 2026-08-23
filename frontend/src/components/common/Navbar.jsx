@@ -28,6 +28,22 @@ export default function Navbar() {
     navigate('/');
   };
 
+  // Handles hash anchor clicks — navigates to '/' first if not already there,
+  // then smoothly scrolls to the target section.
+  const handleNavClick = (e, hash) => {
+    e.preventDefault();
+    const scrollToSection = () => {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    };
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(scrollToSection, 300);
+    } else {
+      scrollToSection();
+    }
+  };
+
   const dashboardLink = isCandidate() ? '/student/dashboard' : '/recruiter/dashboard';
 
   return (
@@ -43,9 +59,9 @@ export default function Navbar() {
 
         {/* Desktop Nav Links */}
         <div className="navbar__links">
-          <Link to="/#internships" className="navbar__link">Find Internships</Link>
-          <Link to="/#companies" className="navbar__link">Companies</Link>
-          <Link to="/#how-it-works" className="navbar__link">How It Works</Link>
+          <a href="#how-matching-works" className="navbar__link" onClick={(e) => handleNavClick(e, '#how-matching-works')}>Find Internships</a>
+          <a href="#companies" className="navbar__link" onClick={(e) => handleNavClick(e, '#companies')}>Companies</a>
+          <a href="#how-it-works" className="navbar__link" onClick={(e) => handleNavClick(e, '#how-it-works')}>How It Works</a>
         </div>
 
         {/* Auth Buttons */}
@@ -92,9 +108,9 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="navbar__mobile">
-          <Link to="/#internships" className="navbar__mobile-link">Find Internships</Link>
-          <Link to="/#companies" className="navbar__mobile-link">Companies</Link>
-          <Link to="/#how-it-works" className="navbar__mobile-link">How It Works</Link>
+          <a href="#how-matching-works" className="navbar__mobile-link" onClick={(e) => handleNavClick(e, '#how-matching-works')}>Find Internships</a>
+          <a href="#companies" className="navbar__mobile-link" onClick={(e) => handleNavClick(e, '#companies')}>Companies</a>
+          <a href="#how-it-works" className="navbar__mobile-link" onClick={(e) => handleNavClick(e, '#how-it-works')}>How It Works</a>
           <div className="navbar__mobile-actions">
             {isAuthenticated() ? (
               <>

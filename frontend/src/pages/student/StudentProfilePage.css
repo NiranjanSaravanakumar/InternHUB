@@ -1,0 +1,368 @@
+﻿/* ─── Page Shell ─────────────────────────────────────────── */
+.sp {
+  min-height: 100vh;
+  background: var(--color-bg-light);
+  padding-top: 88px;
+  padding-bottom: 60px;
+}
+
+.sp__inner {
+  max-width: 900px;
+}
+
+.sp-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--color-text-secondary);
+  padding-top: 88px;
+}
+
+.sp-loading__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-orange);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Hero Card ───────────────────────────────────────────── */
+.sp__hero {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sp__hero-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sp__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-orange), #f59e0b);
+  color: white;
+  font-size: 1.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+}
+
+.sp__name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.sp__role-badge {
+  display: inline-block;
+  background: var(--color-orange-light);
+  color: var(--color-orange-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 10px;
+}
+
+.sp__hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.sp__hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+}
+
+.sp__hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Completion Ring */
+.sp__completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.sp__ring { display: block; }
+
+.sp__completion-pct {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -68%);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--color-orange);
+}
+
+.sp__completion-label {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+.sp__edit-btn {
+  white-space: nowrap;
+}
+
+/* ─── Grid ────────────────────────────────────────────────── */
+.sp__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.sp__card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.sp__card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.sp__card--wide {
+  grid-column: 1 / -1;
+}
+
+.sp__card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--color-text-primary);
+}
+
+.sp__card-header svg {
+  color: var(--color-orange);
+  flex-shrink: 0;
+}
+
+.sp__card-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.sp__card-badge {
+  background: var(--color-orange-light);
+  color: var(--color-orange-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ─── Info Rows ───────────────────────────────────────────── */
+.sp__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sp__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-bg-light);
+  gap: 12px;
+}
+
+.sp__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sp__row-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sp__row-label svg { color: var(--color-text-muted); }
+
+.sp__row-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.sp__row-value--highlight {
+  color: var(--color-orange);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* ─── Skills ─────────────────────────────────────────────── */
+.sp__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sp__skill-tag {
+  background: var(--color-orange-light);
+  color: var(--color-orange-dark);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.sp__skill-tag:hover {
+  background: var(--color-orange);
+  color: white;
+}
+
+/* ─── Resume ─────────────────────────────────────────────── */
+.sp__resume {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-light);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.sp__resume-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--color-orange-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-orange);
+}
+
+.sp__resume-info { flex: 1; }
+
+.sp__resume-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sp__resume-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.sp__resume-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.sp__resume-empty p {
+  font-size: 0.88rem;
+}
+
+/* ─── Empty State ────────────────────────────────────────── */
+.sp__empty {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 60px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--color-text-muted);
+}
+
+.sp__empty svg { color: var(--color-orange); opacity: 0.6; }
+
+.sp__empty h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sp__empty p {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.sp__empty-text {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.sp__empty-text a {
+  color: var(--color-orange);
+  font-weight: 600;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sp__hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sp__hero-right {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .sp__grid {
+    grid-template-columns: 1fr;
+  }
+  .sp__card--wide {
+    grid-column: 1;
+  }
+}

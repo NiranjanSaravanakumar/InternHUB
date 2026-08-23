@@ -165,3 +165,31 @@
   .applicant-card { flex-direction: column; }
   .applicant-card__right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ── Resume Download Button ─────────────────────────────── */
+.applicant-card__resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.applicant-card__resume-btn:hover {
+  background: #FFF7ED;
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+

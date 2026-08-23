@@ -1,4 +1,4 @@
-﻿package com.internhub.matching;
+package com.internhub.matching;
 
 import com.internhub.matching.entity.*;
 import com.internhub.matching.repository.*;
@@ -64,7 +64,7 @@ public class DataSeeder implements CommandLineRunner {
                 .passoutYear(2026).cgpa(8.5)
                 .skills("Java,Spring Boot,React,Data Structures,Algorithms,MySQL,Git,REST APIs,Hibernate")
                 .preferredDomain("Full-Stack").experienceMonths(3)
-                .preferredLocation("Bengaluru").resumeUrl(null).build());
+                .preferredLocation("Bengaluru").resumeUrl("uploads/resumes/dummy.pdf").build());
 
         // Student 2: Alice
         User alice = createUser("Alice", "alice@student.com", "Alice123!",
@@ -77,7 +77,7 @@ public class DataSeeder implements CommandLineRunner {
                 .passoutYear(2025).cgpa(7.8)
                 .skills("Python,Machine Learning,SQL,Pandas,NumPy,Scikit-learn,TensorFlow,AI,Statistics")
                 .preferredDomain("Data Science").experienceMonths(6)
-                .preferredLocation("Chennai").resumeUrl(null).build());
+                .preferredLocation("Chennai").resumeUrl("uploads/resumes/dummy.pdf").build());
 
         // Student 3: Bob
         User bob = createUser("Bob", "bob@student.com", "Bob123!",
@@ -90,7 +90,7 @@ public class DataSeeder implements CommandLineRunner {
                 .passoutYear(2026).cgpa(9.2)
                 .skills("Figma,UI/UX,HTML,CSS,JavaScript,Adobe XD,Prototyping,User Research,Design Systems")
                 .preferredDomain("Design").experienceMonths(2)
-                .preferredLocation("Remote").resumeUrl(null).build());
+                .preferredLocation("Remote").resumeUrl("uploads/resumes/dummy.pdf").build());
 
         // Student 4: Charlie
         User charlie = createUser("Charlie", "charlie@student.com", "Charlie123!",
@@ -103,7 +103,7 @@ public class DataSeeder implements CommandLineRunner {
                 .passoutYear(2025).cgpa(8.0)
                 .skills("AWS,Docker,Kubernetes,Linux,Terraform,CI/CD,Jenkins,Bash,DevOps,Git")
                 .preferredDomain("Cloud").experienceMonths(4)
-                .preferredLocation("Hyderabad").resumeUrl(null).build());
+                .preferredLocation("Hyderabad").resumeUrl("uploads/resumes/dummy.pdf").build());
 
         // Student 5: Diana
         User diana = createUser("Diana", "diana@student.com", "Diana123!",
@@ -116,7 +116,7 @@ public class DataSeeder implements CommandLineRunner {
                 .passoutYear(2025).cgpa(8.8)
                 .skills("Node.js,Express,MongoDB,React,JavaScript,HTML,CSS,REST APIs,Git,MERN Stack")
                 .preferredDomain("Web Dev").experienceMonths(8)
-                .preferredLocation("Pune").resumeUrl(null).build());
+                .preferredLocation("Pune").resumeUrl("uploads/resumes/dummy.pdf").build());
 
         log.info("[DataSeeder] Created 5 students with profiles.");
     }

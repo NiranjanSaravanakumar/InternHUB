@@ -175,3 +175,10 @@
   border-radius: var(--radius-full);
   transition: width 0.8s ease;
 }
+
+.internship-card__view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}

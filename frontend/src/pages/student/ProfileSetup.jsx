@@ -22,12 +22,26 @@ export default function ProfileSetup() {
   useEffect(() => {
     studentService.getProfile().then(res => {
       if (res.data) {
+        const d = res.data;
+        // Backend returns skills as a comma-separated string (e.g. "Java,React").
+        // It also serialises the @Transient getSkillList() as `skillList` (array).
+        // Prefer the array if present, otherwise parse the string.
+        let parsedSkills = [];
+        if (Array.isArray(d.skillList) && d.skillList.length > 0) {
+          parsedSkills = d.skillList;
+        } else if (typeof d.skills === 'string' && d.skills.trim()) {
+          parsedSkills = d.skills.split(',').map(s => s.trim()).filter(Boolean);
+        } else if (Array.isArray(d.skills)) {
+          parsedSkills = d.skills;
+        }
+
         setForm({
-          cgpa: res.data.cgpa || '',
-          skills: res.data.skills || [],
-          preferredDomain: res.data.preferredDomain || '',
-          experienceMonths: res.data.experienceMonths || 0,
-          preferredLocation: res.data.preferredLocation || ''
+          // cgpa: use the raw number; only fall back to '' when null/undefined (not 0)
+          cgpa: d.cgpa != null ? String(d.cgpa) : '',
+          skills: parsedSkills,
+          preferredDomain: d.preferredDomain || '',
+          experienceMonths: d.experienceMonths ?? 0,
+          preferredLocation: d.preferredLocation || ''
         });
       }
     }).catch(() => {});

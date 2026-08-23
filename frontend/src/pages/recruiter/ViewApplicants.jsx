@@ -97,9 +97,15 @@ export default function ViewApplicants() {
                         {applicant.status}
                       </span>
                       {applicant.resumeUrl && (
-                        <a href={`/api/files/${applicant.resumeUrl}`}
-                          className="btn btn-outline btn-sm" download>
-                          <Download size={13} /> Resume
+                        <a
+                          href={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8080'}/${applicant.resumeUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="applicant-card__resume-btn"
+                          title={`Download ${applicant.studentName}'s resume`}
+                        >
+                          <Download size={14} />
+                          View Resume
                         </a>
                       )}
                     </div>
