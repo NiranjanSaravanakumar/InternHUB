@@ -1,0 +1,120 @@
+.post-internship {
+  min-height: 100vh;
+  background: var(--color-bg-light);
+  padding-top: 88px;
+  padding-bottom: 48px;
+}
+
+.post-internship__inner {
+  max-width: 860px;
+}
+
+.post-internship__header {
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-internship__header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.post-internship__header p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.post-internship__form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.post-internship__section {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.post-internship__section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-internship__num {
+  width: 32px;
+  height: 32px;
+  background: var(--color-orange);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.post-internship__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.post-internship__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.post-internship__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.post-internship__skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-orange-light);
+  color: var(--color-orange-dark);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.post-internship__skill-tag button {
+  background: none;
+  border: none;
+  color: var(--color-orange-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.post-internship__skill-tag button:hover { opacity: 1; }
+
+.post-internship__cta {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .post-internship__row { grid-template-columns: 1fr; }
+  .post-internship__cta { flex-direction: column; }
+  .post-internship__cta .btn { width: 100%; justify-content: center; }
+}
