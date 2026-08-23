@@ -1,105 +1,126 @@
 package com.internhub.matching.service;
 
-import com.internhub.matching.dto.*;
+import com.internhub.matching.dto.MatchResultDTO;
+import com.internhub.matching.dto.StudentProfileRequest;
 import com.internhub.matching.entity.*;
 import com.internhub.matching.exception.AppException;
 import com.internhub.matching.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.*;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
 
-    private final UserRepository userRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final InternshipRepository internshipRepository;
-    private final JobApplicationRepository jobApplicationRepository;
+    private final ApplicationRepository applicationRepository;
     private final MatchingService matchingService;
 
-    public StudentProfile getOrCreateProfile(String email) {
-        User user = getUserByEmail(email);
+    private static final String UPLOAD_DIR = "uploads/resumes/";
+
+    // ── Get Profile ──────────────────────────────────────────────────────
+
+    public StudentProfile getProfile(User user) {
         return studentProfileRepository.findByUser(user)
-                .orElse(StudentProfile.builder().user(user).build());
+                .orElseThrow(() -> new AppException("Student profile not found", HttpStatus.NOT_FOUND));
     }
 
-    public StudentProfile updateProfile(String email, StudentProfileRequest req) {
-        User user = getUserByEmail(email);
+    // ── Update Matching Profile ──────────────────────────────────────────
+
+    @Transactional
+    public StudentProfile updateProfile(User user, StudentProfileRequest req) {
         StudentProfile profile = studentProfileRepository.findByUser(user)
-                .orElse(StudentProfile.builder().user(user).build());
-        profile.setCgpa(req.getCgpa());
-        profile.setSkills(req.getSkills());
-        profile.setPreferredDomain(req.getPreferredDomain());
-        profile.setExperienceMonths(req.getExperienceMonths());
-        profile.setPreferredLocation(req.getPreferredLocation());
+                .orElseThrow(() -> new AppException("Student profile not found", HttpStatus.NOT_FOUND));
+
+        if (req.getCgpa() != null)              profile.setCgpa(req.getCgpa());
+        if (req.getPreferredDomain() != null)   profile.setPreferredDomain(req.getPreferredDomain());
+        if (req.getPreferredLocation() != null) profile.setPreferredLocation(req.getPreferredLocation());
+        if (req.getExperienceMonths() != null)  profile.setExperienceMonths(req.getExperienceMonths());
+        if (req.getSkills() != null)            profile.setSkillList(req.getSkills()); // List → CSV TEXT
+
         return studentProfileRepository.save(profile);
     }
 
-    public String uploadResume(String email, MultipartFile file) {
-        User user = getUserByEmail(email);
+    // ── Resume Upload ────────────────────────────────────────────────────
+
+    @Transactional
+    public void uploadResume(User user, MultipartFile file) {
+        StudentProfile profile = studentProfileRepository.findByUser(user)
+                .orElseThrow(() -> new AppException("Student profile not found", HttpStatus.NOT_FOUND));
         try {
-            Path uploadDir = Paths.get("uploads/resumes");
-            Files.createDirectories(uploadDir);
-            String filename = "resume_" + user.getId() + "_" + file.getOriginalFilename();
-            Path filePath = uploadDir.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            user.setResumeFilePath(filePath.toString());
-            userRepository.save(user);
-            return filePath.toString();
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            Files.createDirectories(uploadPath);
+            String filename = user.getId() + "_" + file.getOriginalFilename();
+            Files.copy(file.getInputStream(), uploadPath.resolve(filename),
+                    StandardCopyOption.REPLACE_EXISTING);
+            profile.setResumeUrl(UPLOAD_DIR + filename);
+            studentProfileRepository.save(profile);
         } catch (IOException e) {
-            throw new AppException("Failed to upload resume: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new AppException("Failed to upload resume: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public List<MatchResultDTO> getMatchedInternships(String email) {
-        User user = getUserByEmail(email);
+    // ── Get Matches ──────────────────────────────────────────────────────
+
+    public List<MatchResultDTO> getMatches(User user) {
         StudentProfile profile = studentProfileRepository.findByUser(user)
                 .orElseThrow(() -> new AppException("Please complete your profile first", HttpStatus.BAD_REQUEST));
 
-        List<Internship> internships = internshipRepository.findByActiveTrue();
-        return internships.stream()
+        // Collect internships the student has already applied to
+        Set<Long> appliedIds = applicationRepository.findByStudent(user).stream()
+                .map(a -> a.getInternship().getId())
+                .collect(Collectors.toSet());
+
+        return internshipRepository.findAll().stream()
                 .map(internship -> {
-                    boolean applied = jobApplicationRepository.existsByStudentAndInternship(user, internship);
-                    return matchingService.calculate(profile, internship, applied);
+                    MatchResultDTO dto = matchingService.computeMatch(profile, internship);
+                    dto.setAlreadyApplied(appliedIds.contains(internship.getId()));
+                    return dto;
                 })
                 .sorted(Comparator.comparingDouble(MatchResultDTO::getMatchScore).reversed())
                 .collect(Collectors.toList());
     }
 
-    public void applyForInternship(String email, Long internshipId) {
-        User user = getUserByEmail(email);
+    // ── Apply ────────────────────────────────────────────────────────────
+
+    @Transactional
+    public void apply(User user, Long internshipId) {
         Internship internship = internshipRepository.findById(internshipId)
                 .orElseThrow(() -> new AppException("Internship not found", HttpStatus.NOT_FOUND));
-        if (jobApplicationRepository.existsByStudentAndInternship(user, internship)) {
-            throw new AppException("You have already applied for this internship", HttpStatus.CONFLICT);
+
+        if (applicationRepository.existsByInternshipAndStudent(internship, user)) {
+            throw new AppException("You have already applied to this internship", HttpStatus.CONFLICT);
         }
+
         StudentProfile profile = studentProfileRepository.findByUser(user)
-                .orElseThrow(() -> new AppException("Please complete your profile first", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new AppException("Complete your profile before applying", HttpStatus.BAD_REQUEST));
 
-        MatchResultDTO match = matchingService.calculate(profile, internship, false);
-        JobApplication application = JobApplication.builder()
-                .student(user)
+        MatchResultDTO match = matchingService.computeMatch(profile, internship);
+
+        Application application = Application.builder()
                 .internship(internship)
-                .matchScore(match.getMatchScore())
+                .student(user)
+                .matchPercentage(BigDecimal.valueOf(match.getMatchScore()))
+                .status(Application.Status.APPLIED)
                 .build();
-        jobApplicationRepository.save(application);
+
+        applicationRepository.save(application);
     }
 
-    public List<JobApplication> getMyApplications(String email) {
-        User user = getUserByEmail(email);
-        return jobApplicationRepository.findByStudent(user);
-    }
+    // ── My Applications ──────────────────────────────────────────────────
 
-    private User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+    public List<Application> getMyApplications(User user) {
+        return applicationRepository.findByStudent(user);
     }
 }

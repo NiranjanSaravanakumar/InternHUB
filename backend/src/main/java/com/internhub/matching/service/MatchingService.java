@@ -9,122 +9,89 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Core recommendation engine.
+ * Core algorithm — 4 weighted parameters.
  *
- * Weights:
- *   Skill Match    → 50%
- *   Domain Match   → 20%
- *   CGPA Match     → 15%
- *   Location Match → 15%
+ * Skill Match    → 50%
+ * Domain Match   → 20%
+ * CGPA Match     → 15%
+ * Location Match → 15%
+ *
+ * Skills are comma-separated TEXTs in both StudentProfile and Internship.
+ * The helper getSkillList() is used to parse them into Lists.
  */
 @Service
 public class MatchingService {
 
-    public MatchResultDTO calculate(StudentProfile student, Internship internship, boolean alreadyApplied) {
-        double skillScore    = calculateSkillScore(student, internship);
-        double domainScore   = calculateDomainScore(student, internship);
-        double cgpaScore     = calculateCgpaScore(student, internship);
-        double locationScore = calculateLocationScore(student, internship);
+    public MatchResultDTO computeMatch(StudentProfile student, Internship internship) {
+
+        List<String> studentSkills  = normalise(student.getSkillList());
+        List<String> requiredSkills = normalise(internship.getSkillList());
+
+        // ── 1. Skill Score (50%) ────────────────────────────────────────
+        List<String> matched = new ArrayList<>(studentSkills);
+        matched.retainAll(requiredSkills);
+
+        List<String> missing = new ArrayList<>(requiredSkills);
+        missing.removeAll(studentSkills);
+
+        double skillScore = requiredSkills.isEmpty() ? 50.0
+                : ((double) matched.size() / requiredSkills.size()) * 50.0;
+
+        // ── 2. Domain Score (20%) ───────────────────────────────────────
+        double domainScore = 0;
+        if (student.getPreferredDomain() != null && internship.getDomain() != null &&
+                student.getPreferredDomain().equalsIgnoreCase(internship.getDomain())) {
+            domainScore = 20.0;
+        }
+
+        // ── 3. CGPA Score (15%) ─────────────────────────────────────────
+        double cgpaScore = 0;
+        double minimumCgpa = internship.getMinimumCgpa() != null
+                ? internship.getMinimumCgpa().doubleValue() : 0;
+        if (student.getCgpa() != null && student.getCgpa() >= minimumCgpa) {
+            cgpaScore = 15.0;
+        }
+
+        // ── 4. Location Score (15%) ─────────────────────────────────────
+        double locationScore = 0;
+        String studentLoc   = student.getPreferredLocation();
+        String internshipLoc = internship.getLocation();
+        if (studentLoc != null && internshipLoc != null) {
+            if (studentLoc.equalsIgnoreCase("Any")
+                    || studentLoc.equalsIgnoreCase(internshipLoc)
+                    || internshipLoc.equalsIgnoreCase("Remote")) {
+                locationScore = 15.0;
+            }
+        }
 
         double totalScore = skillScore + domainScore + cgpaScore + locationScore;
 
-        List<String> matchedSkills = getMatchedSkills(student, internship);
-        List<String> missingSkills = getMissingSkills(student, internship);
-
         return MatchResultDTO.builder()
                 .internshipId(internship.getId())
-                .title(internship.getTitle())
-                .company(internship.getCompany())
+                .companyName(internship.getCompanyName())
+                .role(internship.getRole())
                 .domain(internship.getDomain())
                 .location(internship.getLocation())
                 .stipend(internship.getStipend())
-                .durationMonths(internship.getDurationMonths())
-                .description(internship.getDescription())
-                .requiredSkills(internship.getRequiredSkills())
-                .minCgpa(internship.getMinCgpa())
-                .matchScore(Math.round(totalScore * 10.0) / 10.0)
-                .skillScore(skillScore)
+                .minimumCgpa(internship.getMinimumCgpa())
+                .requiredSkills(internship.getSkillList())
+                .matchScore(Math.round(totalScore * 100.0) / 100.0)
+                .skillScore(Math.round(skillScore * 100.0) / 100.0)
                 .domainScore(domainScore)
                 .cgpaScore(cgpaScore)
                 .locationScore(locationScore)
-                .matchedSkills(matchedSkills)
-                .missingSkills(missingSkills)
-                .alreadyApplied(alreadyApplied)
-                .recruiterUserId(internship.getRecruiter() != null ? internship.getRecruiter().getId() : null)
+                .matchedSkills(matched)
+                .missingSkills(missing)
+                .alreadyApplied(false)
                 .build();
     }
 
-    /**
-     * Skill Match → weight 50%
-     * Score = (number of student skills that match required skills / total required skills) × 50
-     */
-    private double calculateSkillScore(StudentProfile student, Internship internship) {
-        if (internship.getRequiredSkills() == null || internship.getRequiredSkills().isEmpty()) {
-            return 50.0; // no requirements = full skill score
+    /** Lowercases and trims each skill for case-insensitive comparison. */
+    private List<String> normalise(List<String> skills) {
+        List<String> result = new ArrayList<>();
+        for (String s : skills) {
+            result.add(s.toLowerCase().trim());
         }
-        if (student.getSkills() == null || student.getSkills().isEmpty()) {
-            return 0.0;
-        }
-        long matchCount = internship.getRequiredSkills().stream()
-                .filter(required -> student.getSkills().stream()
-                        .anyMatch(skill -> skill.trim().equalsIgnoreCase(required.trim())))
-                .count();
-        return ((double) matchCount / internship.getRequiredSkills().size()) * 50.0;
-    }
-
-    /**
-     * Domain Match → weight 20%
-     * Exact string match (case-insensitive) = 20, else 0
-     */
-    private double calculateDomainScore(StudentProfile student, Internship internship) {
-        if (student.getPreferredDomain() == null || internship.getDomain() == null) return 0.0;
-        return student.getPreferredDomain().trim().equalsIgnoreCase(internship.getDomain().trim()) ? 20.0 : 0.0;
-    }
-
-    /**
-     * CGPA Match → weight 15%
-     * Student CGPA >= Min CGPA → 15, else 0 (hard cutoff)
-     */
-    private double calculateCgpaScore(StudentProfile student, Internship internship) {
-        if (internship.getMinCgpa() == null || internship.getMinCgpa() == 0) return 15.0;
-        if (student.getCgpa() == null) return 0.0;
-        return student.getCgpa() >= internship.getMinCgpa() ? 15.0 : 0.0;
-    }
-
-    /**
-     * Location Match → weight 15%
-     * Exact city match (case-insensitive) OR either side is "Remote" → 15, else 0
-     */
-    private double calculateLocationScore(StudentProfile student, Internship internship) {
-        if (student.getPreferredLocation() == null || internship.getLocation() == null) return 0.0;
-        String studentLoc = student.getPreferredLocation().trim().toLowerCase();
-        String internLoc  = internship.getLocation().trim().toLowerCase();
-        if (studentLoc.equals(internLoc)) return 15.0;
-        if (studentLoc.equals("remote") || internLoc.equals("remote")) return 15.0;
-        return 0.0;
-    }
-
-    private List<String> getMatchedSkills(StudentProfile student, Internship internship) {
-        List<String> matched = new ArrayList<>();
-        if (student.getSkills() == null || internship.getRequiredSkills() == null) return matched;
-        for (String required : internship.getRequiredSkills()) {
-            student.getSkills().stream()
-                    .filter(s -> s.trim().equalsIgnoreCase(required.trim()))
-                    .findFirst()
-                    .ifPresent(s -> matched.add(required));
-        }
-        return matched;
-    }
-
-    private List<String> getMissingSkills(StudentProfile student, Internship internship) {
-        List<String> missing = new ArrayList<>();
-        if (internship.getRequiredSkills() == null) return missing;
-        if (student.getSkills() == null) return new ArrayList<>(internship.getRequiredSkills());
-        for (String required : internship.getRequiredSkills()) {
-            boolean found = student.getSkills().stream()
-                    .anyMatch(s -> s.trim().equalsIgnoreCase(required.trim()));
-            if (!found) missing.add(required);
-        }
-        return missing;
+        return result;
     }
 }

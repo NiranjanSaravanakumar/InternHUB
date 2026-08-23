@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface InternshipRepository extends JpaRepository<Internship, Long> {
-    List<Internship> findByActiveTrue();
-    List<Internship> findByRecruiterAndActiveTrue(User recruiter);
     List<Internship> findByRecruiter(User recruiter);
+    List<Internship> findByRecruiterOrderByCreatedAtDesc(User recruiter);
+    List<Internship> findByDomainContainingIgnoreCaseOrLocationContainingIgnoreCase(
+            String domain, String location);
 }

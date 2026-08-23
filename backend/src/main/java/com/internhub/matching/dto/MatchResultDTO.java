@@ -4,35 +4,39 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Returned by GET /api/student/matches
+ * Contains the internship details + computed match breakdown.
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MatchResultDTO {
-    // Internship details
+
+    // ── Internship Info ──────────────────────────────────────────────────
     private Long internshipId;
-    private String title;
-    private String company;
+    private String companyName;
+    private String role;           // Job title
     private String domain;
     private String location;
-    private Integer stipend;
-    private Integer durationMonths;
-    private String description;
+    private BigDecimal stipend;
+    private BigDecimal minimumCgpa;
     private List<String> requiredSkills;
-    private Double minCgpa;
 
-    // Matching breakdown
-    private Double matchScore;         // 0-100 aggregate
-    private Double skillScore;         // 0-50 contribution
-    private Double domainScore;        // 0-20 contribution
-    private Double cgpaScore;          // 0-15 contribution
-    private Double locationScore;      // 0-15 contribution
+    // ── Match Breakdown ──────────────────────────────────────────────────
+    private double matchScore;         // 0–100 aggregate
+    private double skillScore;         // 0–50
+    private double domainScore;        // 0–20
+    private double cgpaScore;          // 0–15
+    private double locationScore;      // 0–15
+
     private List<String> matchedSkills;
     private List<String> missingSkills;
 
-    // Application status
-    private Boolean alreadyApplied;
-    private Long recruiterUserId;
+    // ── Application State ────────────────────────────────────────────────
+    private boolean alreadyApplied;
 }

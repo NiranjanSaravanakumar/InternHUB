@@ -1,5 +1,6 @@
 package com.internhub.matching.dto;
 
+import com.internhub.matching.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthResponse {
     private String token;
-    private String role;
-    private String name;
     private Long userId;
+    private String name;
+    private String email;
+    private String role;      // "STUDENT" or "RECRUITER"
     private boolean profileComplete;
 }

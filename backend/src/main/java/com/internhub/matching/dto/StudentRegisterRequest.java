@@ -1,16 +1,23 @@
 package com.internhub.matching.dto;
 
 import lombok.Data;
-import java.time.LocalDate;
 
+/**
+ * Used for POST /api/auth/register/student
+ * Captures both User and StudentProfile fields in one request.
+ */
 @Data
 public class StudentRegisterRequest {
+
+    // ── User fields ──────────────────────────────────────────────────────
     private String name;
     private String email;
     private String password;
-    private String phone;
+    private String phoneNumber;
     private String address;
-    private LocalDate dateOfBirth;
+
+    // ── StudentProfile fields ────────────────────────────────────────────
+    private String dateOfBirth;      // ISO date: "2002-08-15"
     private String collegeName;
     private String degree;
     private String department;

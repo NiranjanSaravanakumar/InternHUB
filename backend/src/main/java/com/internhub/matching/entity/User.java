@@ -2,7 +2,7 @@ package com.internhub.matching.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -17,36 +17,30 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    private String phone;
+    @Column(name = "phone_number", nullable = false, length = 20)
+    private String phoneNumber;
+
+    @Column(columnDefinition = "TEXT")
     private String address;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    // ── Student-only fields ──────────────────────────────
-    private String collegeName;
-
-    private String degree;        // e.g., B.Tech, M.Tech, BCA
-    private String department;    // e.g., CSE, IT, ECE
-    private Integer passoutYear;  // 2015–2030
-    private LocalDate dateOfBirth;
-    private String resumeFilePath;
-
-    // ── Recruiter-only fields ────────────────────────────
-    private String companyName;
-    private String employeeRole;  // e.g., HR Manager, Tech Lead
+    @Builder.Default
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum Role {
-        CANDIDATE, RECRUITER
+        STUDENT, RECRUITER
     }
 }
