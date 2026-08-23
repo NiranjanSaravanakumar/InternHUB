@@ -92,10 +92,16 @@ npm run dev
 
 ### Stopping the Application
 
-To stop the Vite development server:
-1. Go to the terminal window where the server is running.
-2. Press `Ctrl + C` on your keyboard.
-3. If prompted with `Terminate batch job (Y/N)?`, type `Y` and press `Enter`.
+To stop the Vite development server normally, press `Ctrl + C` in its terminal window.
+
+If the server is stuck in the background and you need to forcefully kill port `5173`, run this in a new terminal:
+
+```powershell
+# Windows (PowerShell)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 5173).OwningProcess -Force
+```
+
+*(Alternatively, run `npx kill-port 5173` if you have Node installed).*
 
 ### Build for Production
 

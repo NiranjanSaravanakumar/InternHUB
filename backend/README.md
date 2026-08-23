@@ -134,10 +134,16 @@ app.jwt.expiration=86400000      # 24 hours in ms
 
 ### 4 — Stopping the Application
 
-To stop the Spring Boot server:
-1. Go to the terminal window where the server is running.
-2. Press `Ctrl + C` on your keyboard.
-3. If prompted with `Terminate batch job (Y/N)?`, type `Y` and press `Enter`.
+To stop the Spring Boot server normally, press `Ctrl + C` in its terminal window.
+
+If the server is stuck in the background and you need to forcefully kill port `8080`, run this in a new terminal:
+
+```powershell
+# Windows (PowerShell)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force
+```
+
+*(Alternatively, run `npx kill-port 8080` if you have Node installed).*
 
 ---
 

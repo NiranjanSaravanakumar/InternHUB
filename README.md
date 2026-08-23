@@ -125,10 +125,19 @@ npm run dev
 
 ### 4 — Stopping the Application
 
-To stop either the frontend or backend server:
-1. Go to the terminal window where the server is running.
-2. Press `Ctrl + C` on your keyboard.
-3. If prompted with `Terminate batch job (Y/N)?`, type `Y` and press `Enter`.
+To stop the servers normally, press `Ctrl + C` in their respective terminal windows. 
+
+If a server is stuck running in the background and you need to forcefully free up the port, run these commands in a new terminal:
+
+```powershell
+# Windows (PowerShell) - Kill Backend (Port 8080)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force
+
+# Windows (PowerShell) - Kill Frontend (Port 5173)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 5173).OwningProcess -Force
+```
+
+*(Alternatively, if you have Node installed, you can just run `npx kill-port 8080` and `npx kill-port 5173` on any OS).*
 
 ---
 
