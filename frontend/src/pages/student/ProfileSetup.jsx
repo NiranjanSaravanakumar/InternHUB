@@ -143,7 +143,12 @@ export default function ProfileSetup() {
                 placeholder="8.5"
                 min="0" max="10" step="0.1"
                 value={form.cgpa}
-                onChange={e => setForm(f => ({ ...f, cgpa: e.target.value }))}
+                onChange={e => {
+                  let val = e.target.value;
+                  if (val !== '' && parseFloat(val) > 10) val = '10';
+                  if (val !== '' && parseFloat(val) < 0) val = '0';
+                  setForm(f => ({ ...f, cgpa: val }));
+                }}
                 style={{ maxWidth: 200 }}
                 required
               />

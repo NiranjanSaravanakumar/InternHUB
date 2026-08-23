@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { recruiterService } from '../../services/recruiterService';
-import { Plus, Trash2, Users, Briefcase, MapPin, DollarSign, Eye } from 'lucide-react';
+import { Plus, Trash2, Users, Briefcase, MapPin, IndianRupee, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './RecruiterDashboard.css';
 
@@ -89,7 +89,7 @@ export default function RecruiterDashboard() {
                     <div className="recruiter-card__meta">
                       <span className="badge badge-blue">{intern.domain}</span>
                       <span><MapPin size={12} /> {intern.location}</span>
-                      <span><DollarSign size={12} /> ₹{intern.stipend?.toLocaleString()}/mo</span>
+                      <span><IndianRupee size={12} /> {intern.stipend?.toLocaleString()}/mo</span>
                       {intern.minimumCgpa > 0 && <span>Min CGPA: {intern.minimumCgpa}</span>}
                     </div>
                     <div className="recruiter-card__skills">

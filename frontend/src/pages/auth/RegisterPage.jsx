@@ -332,7 +332,12 @@ export default function RegisterPage() {
                         max="10"
                         placeholder="8.50"
                         value={cgpa}
-                        onChange={e => setCgpa(e.target.value)}
+                        onChange={e => {
+                          let val = e.target.value;
+                          if (val !== '' && parseFloat(val) > 10) val = '10';
+                          if (val !== '' && parseFloat(val) < 0) val = '0';
+                          setCgpa(val);
+                        }}
                         className="
                           w-full border-2 border-black bg-white
                           pl-3 pr-16 py-3 text-sm font-black text-black

@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  X, MapPin, DollarSign, Zap, CheckCircle, XCircle,
+  X, MapPin, IndianRupee, Zap, CheckCircle, XCircle,
   Building2, GraduationCap, Layers, Briefcase, Clock, Send
 } from 'lucide-react';
 import './InternshipModal.css';
@@ -73,7 +73,7 @@ export default function InternshipModal({ internship, onClose, onConfirmApply })
           {/* Quick Info Chips */}
           <div className="im-chips">
             <span className="im-chip"><MapPin size={13} /> {location}</span>
-            <span className="im-chip"><DollarSign size={13} /> Rs.{stipend?.toLocaleString()}/mo</span>
+            <span className="im-chip"><IndianRupee size={13} /> {stipend?.toLocaleString()}/mo</span>
             <span className="im-chip"><Layers size={13} /> {domain}</span>
             <span className="im-chip"><GraduationCap size={13} /> Min CGPA: {minimumCgpa}</span>
           </div>

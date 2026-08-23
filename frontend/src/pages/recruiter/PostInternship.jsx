@@ -37,7 +37,9 @@ export default function PostInternship() {
     try {
       await recruiterService.postInternship({
         ...form,
-        minCgpa: parseFloat(form.minCgpa) || 0,
+        companyName: form.company,
+        role: form.title,
+        minimumCgpa: parseFloat(form.minCgpa) || 0,
         stipend: parseInt(form.stipend),
         durationMonths: parseInt(form.durationMonths) || null
       });
@@ -124,7 +126,12 @@ export default function PostInternship() {
                 <label className="form-label">Minimum CGPA</label>
                 <input type="number" className="form-input" placeholder="7.5 (leave 0 for none)"
                   min="0" max="10" step="0.1"
-                  value={form.minCgpa} onChange={e => update('minCgpa', e.target.value)} />
+                  value={form.minCgpa} onChange={e => {
+                    let val = e.target.value;
+                    if (val !== '' && parseFloat(val) > 10) val = '10';
+                    if (val !== '' && parseFloat(val) < 0) val = '0';
+                    update('minCgpa', val);
+                  }} />
               </div>
             </div>
           </div>

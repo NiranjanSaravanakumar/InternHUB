@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { studentService } from '../../services/studentService';
-import { Briefcase, MapPin, DollarSign, Clock, ArrowRight } from 'lucide-react';
+import { Briefcase, MapPin, IndianRupee, Clock, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './MyApplications.css';
 
@@ -62,7 +62,7 @@ export default function MyApplications() {
                     <p className="application-card__company">{intern?.companyName}</p>
                     <div className="application-card__meta">
                       <span><MapPin size={12} /> {intern?.location}</span>
-                      <span><DollarSign size={12} /> ₹{intern?.stipend?.toLocaleString()}/mo</span>
+                      <span><IndianRupee size={12} /> {intern?.stipend?.toLocaleString()}/mo</span>
                       <span><Clock size={12} /> {intern?.durationMonths} months</span>
                       <span className="application-card__applied">
                         Applied: {new Date(app.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}

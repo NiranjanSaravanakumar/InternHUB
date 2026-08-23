@@ -1,4 +1,4 @@
-﻿import { MapPin, DollarSign, Zap, CheckCircle, Crown, Eye } from 'lucide-react';
+import { MapPin, IndianRupee, Zap, CheckCircle, Crown, Eye } from 'lucide-react';
 import './InternshipCard.css';
 
 export default function InternshipCard({ match, onView, rank }) {
@@ -37,8 +37,8 @@ export default function InternshipCard({ match, onView, rank }) {
 
       <div className="internship-card__meta">
         <span className="internship-card__meta-item"><MapPin size={13} />{location}</span>
-        <span className="internship-card__meta-item"><DollarSign size={13} />
-          Rs.{stipend?.toLocaleString()}/mo
+        <span className="internship-card__meta-item"><IndianRupee size={13} />
+          {stipend?.toLocaleString()}/mo
         </span>
         {minimumCgpa > 0 && (
           <span className="internship-card__meta-item">Min CGPA: {minimumCgpa}</span>
