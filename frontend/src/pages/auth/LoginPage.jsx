@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
-import { Briefcase, Eye, EyeOff, GraduationCap, Building2 } from 'lucide-react';
+import { Briefcase, Eye, EyeOff, GraduationCap, Building2, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 
@@ -95,6 +95,7 @@ export default function LoginPage() {
       <div className="auth-page__right">
         <div className="auth-form">
           <div className="auth-form__header">
+            <button onClick={() => navigate('/')} className="auth-back-btn"><ArrowLeft size={14} /> Back to Home</button>
             <h1 className="auth-form__title">Welcome Back</h1>
             <p className="auth-form__sub">
               Sign in to your {isRecruiter ? 'Recruiter' : 'Student'} portal
