@@ -106,18 +106,18 @@ export default function LoginPage() {
               <button
                 type="button"
                 id="login-toggle-candidate"
-                className={`auth-role-toggle__btn${loginRole === 'STUDENT' ? ' active' : ''}`}
+                className={`flex items-center justify-center gap-2 auth-role-toggle__btn${loginRole === 'STUDENT' ? ' active' : ''}`}
                 onClick={() => setLoginRole('STUDENT')}
               >
-                🎓 Candidate
+                <GraduationCap size={18} strokeWidth={2} /> Candidate
               </button>
               <button
                 type="button"
                 id="login-toggle-recruiter"
-                className={`auth-role-toggle__btn${loginRole === 'RECRUITER' ? ' active' : ''}`}
+                className={`flex items-center justify-center gap-2 auth-role-toggle__btn${loginRole === 'RECRUITER' ? ' active' : ''}`}
                 onClick={() => setLoginRole('RECRUITER')}
               >
-                🏢 Recruiter
+                <Building2 size={18} strokeWidth={2} /> Recruiter
               </button>
             </div>
           </div>

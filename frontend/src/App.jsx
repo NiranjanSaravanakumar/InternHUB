@@ -88,18 +88,9 @@ export default function App() {
           position="top-right"
           toastOptions={{
             duration: 4000,
-            style: {
-              fontFamily: "'Manrope', 'Plus Jakarta Sans', sans-serif",
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              borderRadius: '0px',
-              border: '2px solid #000000',
-              boxShadow: '4px 4px 0 0 #000000',
-              background: '#ffffff',
-              color: '#000000',
-            },
+            className: 'bg-white rounded-xl border border-gray-100 shadow-lg shadow-gray-200/50 text-gray-800 font-medium font-sans text-sm',
             success: {
-              iconTheme: { primary: '#F97316', secondary: '#fff' },
+              iconTheme: { primary: '#f97316', secondary: '#ffffff' },
             },
           }}
         />

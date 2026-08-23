@@ -1,27 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Briefcase, Users, Building2, TrendingUp, MapPin, DollarSign, Star, CheckCircle, Zap, Target, Globe } from 'lucide-react';
+import { ArrowRight, Briefcase, Users, Building2, TrendingUp, CheckCircle, Zap, Target, Globe } from 'lucide-react';
 import './LandingPage.css';
 
-const SAMPLE_INTERNSHIPS = [
-  {
-    id: 1, title: 'React / Java Developer', company: 'TechNova Solutions',
-    domain: 'Full-Stack', location: 'Bengaluru', stipend: 20000,
-    skills: ['React', 'Spring Boot', 'MySQL', 'REST APIs'],
-    match: 92
-  },
-  {
-    id: 2, title: 'ML Engineer Intern', company: 'DataSpark AI',
-    domain: 'Machine Learning', location: 'Remote', stipend: 18000,
-    skills: ['Python', 'TensorFlow', 'Pandas', 'NumPy'],
-    match: 87
-  },
-  {
-    id: 3, title: 'Frontend Developer', company: 'PixelForge',
-    domain: 'Frontend', location: 'Hyderabad', stipend: 15000,
-    skills: ['React', 'TypeScript', 'CSS3', 'Figma'],
-    match: 78
-  },
-];
+
 
 const STATS = [
   { icon: Briefcase, value: '10K+', label: 'Internships' },
@@ -77,44 +58,7 @@ export default function LandingPage() {
           </div>
 
           <div className="hero__visual animate-fadeInUp delay-200">
-            <div className="hero__card hero__card--student animate-float">
-              <div className="hero__card-header">
-                <div className="hero__card-avatar">A</div>
-                <div>
-                  <p className="hero__card-name">Aditya Kumar</p>
-                  <p className="hero__card-sub">B.Tech CSE · CGPA 8.7</p>
-                </div>
-              </div>
-              <div className="hero__card-skills">
-                {['React', 'Spring Boot', 'MySQL'].map(s => (
-                  <span key={s} className="badge badge-orange">{s}</span>
-                ))}
-              </div>
-              <div className="hero__card-location">
-                <MapPin size={12} /> Bengaluru
-              </div>
-            </div>
-
-            <div className="hero__connector">
-              <div className="hero__connector-line" />
-              <div className="hero__connector-score">
-                <Zap size={16} />
-                92% Match
-              </div>
-              <div className="hero__connector-line" />
-            </div>
-
-            <div className="hero__card hero__card--company animate-float delay-300">
-              <div className="hero__company-logo">T</div>
-              <div>
-                <p className="hero__card-name">TechNova Solutions</p>
-                <p className="hero__card-sub">React / Java Developer</p>
-              </div>
-              <div className="hero__card-meta">
-                <span><MapPin size={11} /> Bengaluru</span>
-                <span><DollarSign size={11} /> ₹20K/mo</span>
-              </div>
-            </div>
+            <img src="/Image123.jpeg" alt="Platform Match Preview" style={{ width: '100%', height: 'auto', borderRadius: '20px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)' }} />
           </div>
         </div>
       </section>
@@ -134,48 +78,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Discovery Preview ── */}
-      <section className="section preview" id="internships">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Internships Made <span>For You</span></h2>
-            <p className="section-sub">Every result is ranked by your personal match score, not generic popularity.</p>
-          </div>
-          <div className="preview__grid">
-            {SAMPLE_INTERNSHIPS.map((intern, idx) => (
-              <div key={intern.id} className={`preview__card ${idx === 0 ? 'preview__card--top' : ''}`}>
-                {idx === 0 && <div className="preview__card-badge"><Star size={12} /> #1 Best Match</div>}
-                <div className="preview__card-header">
-                  <div className="preview__company-logo">{intern.company.charAt(0)}</div>
-                  <div style={{ flex: 1 }}>
-                    <h3 className="preview__card-title">{intern.title}</h3>
-                    <p className="preview__card-company">{intern.company}</p>
-                  </div>
-                  <div className="preview__match-badge">{intern.match}% Match</div>
-                </div>
-                <div className="preview__card-meta">
-                  <span><MapPin size={12} /> {intern.location}</span>
-                  <span><DollarSign size={12} /> ₹{intern.stipend.toLocaleString()}/mo</span>
-                </div>
-                <div className="badge badge-blue preview__domain">{intern.domain}</div>
-                <div className="preview__skills">
-                  {intern.skills.map(s => (
-                    <span key={s} className="badge badge-gray">{s}</span>
-                  ))}
-                </div>
-                <Link to="/register/student" className="btn btn-outline-orange btn-sm btn-full">
-                  Apply Now <ArrowRight size={14} />
-                </Link>
-              </div>
-            ))}
-          </div>
-          <div className="preview__cta">
-            <Link to="/register/student" className="btn btn-primary btn-lg">
-              See All Matches <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
+
 
       {/* ── Matching USP ── */}
       <section className="section matching-usp" id="how-matching-works">

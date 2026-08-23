@@ -437,6 +437,10 @@
 
 .auth-role-toggle__btn {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   padding: 9px 16px;
   border-radius: 9999px;
   border: none;

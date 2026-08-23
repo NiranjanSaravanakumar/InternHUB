@@ -101,30 +101,30 @@ function PwChecklist({ password, confirmPassword }) {
   const mismatch = confirmPassword.length > 0 && password !== confirmPassword;
 
   return (
-    <div className="border-2 border-black bg-[#F9FAFB] p-3 shadow-[3px_3px_0_0_#000000]">
-      <div className="font-mono text-[10px] text-black/50 uppercase tracking-widest mb-2">
-        // password_constraints
+    <div className="bg-white rounded-xl border border-gray-100 p-3 shadow-lg shadow-gray-200/50">
+      <div className="font-sans text-[10px] text-gray-500 font-medium uppercase tracking-widest mb-2">
+        Password Constraints
       </div>
       <div className="flex flex-col gap-1">
         {results.map(({ key, label, passed }) => (
           <div key={key} className="flex items-center gap-2">
             {passed
-              ? <CheckCircle2 size={12} className="text-green-600 shrink-0" strokeWidth={2.5} />
+              ? <CheckCircle2 size={12} className="text-orange-500 shrink-0" strokeWidth={2.5} />
               : <XCircle     size={12} className="text-red-500 shrink-0"   strokeWidth={2.5} />
             }
-            <span className={`font-mono text-[11px] ${passed ? 'text-green-700' : 'text-red-600'}`}>
+            <span className={`font-sans text-[11px] font-medium ${passed ? 'text-gray-800' : 'text-red-600'}`}>
               {label}
             </span>
           </div>
         ))}
         {/* match rule */}
-        <div className="flex items-center gap-2 mt-0.5 border-t border-black/10 pt-1">
+        <div className="flex items-center gap-2 mt-0.5 border-t border-gray-100 pt-1">
           {match
-            ? <CheckCircle2 size={12} className="text-green-600 shrink-0" strokeWidth={2.5} />
-            : <XCircle     size={12} className={`${mismatch ? 'text-red-500' : 'text-black/25'} shrink-0`} strokeWidth={2.5} />
+            ? <CheckCircle2 size={12} className="text-orange-500 shrink-0" strokeWidth={2.5} />
+            : <XCircle     size={12} className={`${mismatch ? 'text-red-500' : 'text-gray-300'} shrink-0`} strokeWidth={2.5} />
           }
-          <span className={`font-mono text-[11px] ${match ? 'text-green-700' : mismatch ? 'text-red-600' : 'text-black/40'}`}>
-            match:passwords
+          <span className={`font-sans text-[11px] font-medium ${match ? 'text-gray-800' : mismatch ? 'text-red-600' : 'text-gray-400'}`}>
+            Passwords Match
           </span>
         </div>
       </div>
@@ -242,6 +242,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => setRole(r)}
                 className={`
+                  flex items-center justify-center gap-2
                   flex-1 py-3 text-xs font-black uppercase tracking-widest
                   transition-none border-none outline-none
                   active:translate-y-[1px] active:translate-x-[1px]
@@ -251,13 +252,13 @@ export default function RegisterPage() {
                 `}
               >
                 {r === 'CANDIDATE' ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <User size={13} strokeWidth={2.5} /> Candidate
-                  </span>
+                  <>
+                    <User size={18} strokeWidth={2} /> Candidate
+                  </>
                 ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <Building2 size={13} strokeWidth={2.5} /> Recruiter
-                  </span>
+                  <>
+                    <Building2 size={18} strokeWidth={2} /> Recruiter
+                  </>
                 )}
               </button>
             ))}

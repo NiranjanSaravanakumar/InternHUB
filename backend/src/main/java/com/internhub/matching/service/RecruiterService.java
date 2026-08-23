@@ -20,14 +20,18 @@ public class RecruiterService {
     private final InternshipRepository internshipRepository;
     private final ApplicationRepository applicationRepository;
     private final StudentProfileRepository studentProfileRepository;
+    private final RecruiterProfileRepository recruiterProfileRepository;
 
     // ── Post Internship ──────────────────────────────────────────────────
 
     @Transactional
     public Internship postInternship(User recruiter, InternshipRequest req) {
+        RecruiterProfile profile = recruiterProfileRepository.findByUser(recruiter)
+                .orElseThrow(() -> new AppException("Recruiter profile not found", HttpStatus.NOT_FOUND));
+
         Internship internship = new Internship();
         internship.setRecruiter(recruiter);
-        internship.setCompanyName(req.getCompanyName());
+        internship.setCompanyName(profile.getCompanyName());
         internship.setRole(req.getRole());
         internship.setSkillList(req.getRequiredSkills());   // List → CSV TEXT
         internship.setMinimumCgpa(req.getMinimumCgpa());

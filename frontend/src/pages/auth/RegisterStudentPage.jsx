@@ -162,7 +162,7 @@ export default function RegisterStudentPage() {
                 className={`auth-role-toggle__btn${registerRole === 'STUDENT' ? ' active' : ''}`}
                 onClick={() => handleRoleSwitch('STUDENT')}
               >
-                🎓 Candidate
+                <GraduationCap size={18} strokeWidth={2} /> Candidate
               </button>
               <button
                 type="button"
@@ -170,7 +170,7 @@ export default function RegisterStudentPage() {
                 className={`auth-role-toggle__btn${registerRole === 'RECRUITER' ? ' active' : ''}`}
                 onClick={() => handleRoleSwitch('RECRUITER')}
               >
-                🏢 Recruiter
+                <Building2 size={18} strokeWidth={2} /> Recruiter
               </button>
             </div>
 
