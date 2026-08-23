@@ -56,14 +56,14 @@ export default function MyApplications() {
                   </div>
                   <div className="application-card__info">
                     <div className="application-card__title-row">
-                      <h3>{intern?.title}</h3>
+                      <h3>{intern?.role}</h3>
                       <span className={`badge ${status.class}`}>{status.label}</span>
                     </div>
-                    <p className="application-card__company">{intern?.company}</p>
+                    <p className="application-card__company">{intern?.companyName}</p>
                     <div className="application-card__meta">
                       <span><MapPin size={12} /> {intern?.location}</span>
                       <span><DollarSign size={12} /> ₹{intern?.stipend?.toLocaleString()}/mo</span>
-                      {intern?.durationMonths && <span><Clock size={12} /> {intern.durationMonths} months</span>}
+                      <span><Clock size={12} /> {intern?.durationMonths} months</span>
                       <span className="application-card__applied">
                         Applied: {new Date(app.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
@@ -71,8 +71,8 @@ export default function MyApplications() {
                   </div>
                   <div className="application-card__match">
                     <div className="application-card__match-score">
-                      {app.matchScore?.toFixed(0)}%
-                    </div>
+                    {app.matchPercentage?.toFixed(0) ?? 0}%
+                  </div>
                     <div className="application-card__match-label">Match</div>
                   </div>
                 </div>

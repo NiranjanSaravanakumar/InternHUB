@@ -2,7 +2,6 @@ package com.internhub.matching.controller;
 
 import com.internhub.matching.dto.*;
 import com.internhub.matching.service.AuthService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

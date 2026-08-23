@@ -33,7 +33,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('internhub_user');
   };
 
-  const isCandidate = () => user?.role === 'CANDIDATE';
+  const isStudent = () => user?.role === 'STUDENT';
+  const isCandidate = isStudent; // backward-compat alias
   const isRecruiter = () => user?.role === 'RECRUITER';
   const isAuthenticated = () => !!token;
 

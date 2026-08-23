@@ -1,11 +1,11 @@
-import { MapPin, DollarSign, Clock, Zap, CheckCircle, Crown } from 'lucide-react';
+import { MapPin, DollarSign, Zap, CheckCircle, Crown } from 'lucide-react';
 import './InternshipCard.css';
 
 export default function InternshipCard({ match, onApply, rank }) {
   const {
-    internshipId, title, company, domain, location, stipend,
-    durationMonths, requiredSkills, matchScore, matchedSkills,
-    missingSkills, alreadyApplied, minCgpa
+    internshipId, role, companyName, domain, location, stipend,
+    requiredSkills, matchScore, matchedSkills,
+    missingSkills, alreadyApplied, minimumCgpa
   } = match;
 
   const isTopThree = rank <= 3;
@@ -23,11 +23,11 @@ export default function InternshipCard({ match, onApply, rank }) {
 
       <div className="internship-card__header">
         <div className="internship-card__company-logo">
-          {company?.charAt(0) || 'C'}
+          {companyName?.charAt(0) || 'C'}
         </div>
         <div className="internship-card__title-block">
-          <h3 className="internship-card__title">{title}</h3>
-          <p className="internship-card__company">{company}</p>
+          <h3 className="internship-card__title">{role}</h3>
+          <p className="internship-card__company">{companyName}</p>
         </div>
         <div className="internship-card__score" style={{ background: scoreBg, color: scoreColor }}>
           <Zap size={14} />
@@ -44,15 +44,9 @@ export default function InternshipCard({ match, onApply, rank }) {
           <DollarSign size={13} />
           ₹{stipend?.toLocaleString()}/mo
         </span>
-        {durationMonths && (
+        {minimumCgpa > 0 && (
           <span className="internship-card__meta-item">
-            <Clock size={13} />
-            {durationMonths} months
-          </span>
-        )}
-        {minCgpa > 0 && (
-          <span className="internship-card__meta-item">
-            Min CGPA: {minCgpa}
+            Min CGPA: {minimumCgpa}
           </span>
         )}
       </div>

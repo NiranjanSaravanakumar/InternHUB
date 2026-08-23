@@ -1,13 +1,27 @@
 import api from './api';
 
 export const recruiterService = {
-  postInternship: (data) => api.post('/recruiter/internships', data),
-  getMyInternships: () => api.get('/recruiter/internships'),
-  deleteInternship: (id) => api.delete(`/recruiter/internships/${id}`),
-  getApplicants: (id) => api.get(`/recruiter/internships/${id}/applicants`),
-};
 
-export const internshipService = {
-  getAll: (params) => api.get('/internships', { params }),
-  getById: (id) => api.get(`/internships/${id}`),
+  // ── Post Internship ───────────────────────────────────────────────────
+  postInternship: (data) =>
+    api.post('/recruiter/internships', data),
+    // data: { companyName, role, requiredSkills[], minimumCgpa, domain, location, stipend }
+
+  // ── My Internships ────────────────────────────────────────────────────
+  getMyInternships: () =>
+    api.get('/recruiter/internships'),
+    // Returns Internship[]: { id, companyName, role, requiredSkills (CSV string),
+    //   minimumCgpa, domain, location, stipend, createdAt }
+
+  // ── Delete ────────────────────────────────────────────────────────────
+  deleteInternship: (id) =>
+    api.delete(`/recruiter/internships/${id}`),
+
+  // ── Applicants ────────────────────────────────────────────────────────
+  getApplicants: (internshipId) =>
+    api.get(`/recruiter/internships/${internshipId}/applicants`),
+    // Returns ApplicantDTO[]: { applicationId, matchPercentage, status, appliedAt,
+    //   studentId, studentName, studentEmail, phoneNumber, cgpa, skills[],
+    //   preferredDomain, preferredLocation, collegeName, degree, department,
+    //   passoutYear, resumeUrl }
 };

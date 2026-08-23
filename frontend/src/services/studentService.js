@@ -1,16 +1,37 @@
 import api from './api';
 
 export const studentService = {
-  getProfile: () => api.get('/student/profile'),
-  updateProfile: (data) => api.put('/student/profile', data),
+
+  // ── Profile ──────────────────────────────────────────────────────────
+  getProfile: () =>
+    api.get('/student/profile'),
+
+  updateProfile: (data) =>
+    api.put('/student/profile', data),
+    // data: { cgpa, skills: [], preferredDomain, preferredLocation, experienceMonths }
+
   uploadResume: (file) => {
     const formData = new FormData();
     formData.append('file', file);
     return api.post('/student/profile/resume', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
-  getMatches: () => api.get('/student/matches'),
-  applyForInternship: (id) => api.post(`/student/apply/${id}`),
-  getMyApplications: () => api.get('/student/applications'),
+
+  // ── Matches ───────────────────────────────────────────────────────────
+  getMatches: () =>
+    api.get('/student/matches'),
+    // Returns MatchResultDTO[]: { internshipId, companyName, role, domain,
+    //   location, stipend, minimumCgpa, requiredSkills[], matchScore,
+    //   skillScore, domainScore, cgpaScore, locationScore,
+    //   matchedSkills[], missingSkills[], alreadyApplied }
+
+  // ── Apply ─────────────────────────────────────────────────────────────
+  applyForInternship: (internshipId) =>
+    api.post(`/student/apply/${internshipId}`),
+
+  // ── Applications ──────────────────────────────────────────────────────
+  getMyApplications: () =>
+    api.get('/student/applications'),
+    // Returns Application[]: { id, internship, matchPercentage, status, appliedAt }
 };

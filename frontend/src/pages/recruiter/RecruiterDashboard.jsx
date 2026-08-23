@@ -81,19 +81,19 @@ export default function RecruiterDashboard() {
               {internships.map(intern => (
                 <div key={intern.id} className="recruiter-card">
                   <div className="recruiter-card__logo">
-                    {intern.company?.charAt(0) || 'C'}
+                    {intern.companyName?.charAt(0) || 'C'}
                   </div>
                   <div className="recruiter-card__main">
-                    <h3 className="recruiter-card__title">{intern.title}</h3>
-                    <p className="recruiter-card__company">{intern.company}</p>
+                    <h3 className="recruiter-card__title">{intern.role}</h3>
+                    <p className="recruiter-card__company">{intern.companyName}</p>
                     <div className="recruiter-card__meta">
                       <span className="badge badge-blue">{intern.domain}</span>
                       <span><MapPin size={12} /> {intern.location}</span>
                       <span><DollarSign size={12} /> ₹{intern.stipend?.toLocaleString()}/mo</span>
-                      {intern.minCgpa > 0 && <span>Min CGPA: {intern.minCgpa}</span>}
+                      {intern.minimumCgpa > 0 && <span>Min CGPA: {intern.minimumCgpa}</span>}
                     </div>
                     <div className="recruiter-card__skills">
-                      {intern.requiredSkills?.slice(0, 5).map(s => (
+                      {intern.requiredSkills?.split(',').filter(Boolean).slice(0, 5).map(s => (
                         <span key={s} className="badge badge-gray">{s}</span>
                       ))}
                     </div>

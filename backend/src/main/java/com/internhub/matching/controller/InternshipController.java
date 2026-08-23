@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/internships")
@@ -16,38 +15,27 @@ public class InternshipController {
 
     private final InternshipRepository internshipRepository;
 
-    /**
-     * Public endpoint — returns all active internships.
-     * Supports optional query filters: domain, location, minStipend
-     */
+    /** GET /api/internships — public listing */
     @GetMapping
-    public ResponseEntity<List<Internship>> getAllInternships(
+    public ResponseEntity<List<Internship>> listAll(
             @RequestParam(required = false) String domain,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) Integer minStipend) {
+            @RequestParam(required = false) String location) {
 
-        List<Internship> internships = internshipRepository.findByActiveTrue();
+        if (domain != null || location != null) {
+            String d = domain != null ? domain : "";
+            String l = location != null ? location : "";
+            return ResponseEntity.ok(
+                internshipRepository
+                    .findByDomainContainingIgnoreCaseOrLocationContainingIgnoreCase(d, l)
+            );
+        }
 
-        if (domain != null && !domain.isEmpty()) {
-            internships = internships.stream()
-                    .filter(i -> i.getDomain() != null && i.getDomain().equalsIgnoreCase(domain))
-                    .collect(Collectors.toList());
-        }
-        if (location != null && !location.isEmpty()) {
-            internships = internships.stream()
-                    .filter(i -> i.getLocation() != null && i.getLocation().equalsIgnoreCase(location))
-                    .collect(Collectors.toList());
-        }
-        if (minStipend != null) {
-            internships = internships.stream()
-                    .filter(i -> i.getStipend() != null && i.getStipend() >= minStipend)
-                    .collect(Collectors.toList());
-        }
-        return ResponseEntity.ok(internships);
+        return ResponseEntity.ok(internshipRepository.findAll());
     }
 
+    /** GET /api/internships/{id} */
     @GetMapping("/{id}")
-    public ResponseEntity<Internship> getInternship(@PathVariable Long id) {
+    public ResponseEntity<Internship> getById(@PathVariable Long id) {
         return internshipRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -88,7 +88,7 @@ export default function ViewApplicants() {
                       <div className="applicant-card__score"
                         style={{ background: scoreStyle.bg, color: scoreStyle.color }}>
                         <Zap size={14} />
-                        {applicant.matchScore?.toFixed(1) || 0}% Match
+                        {applicant.matchPercentage?.toFixed(1) || 0}% Match
                       </div>
                       <span className={`badge applicant-card__status badge-${
                         applicant.status === 'SHORTLISTED' ? 'green' :
@@ -96,8 +96,8 @@ export default function ViewApplicants() {
                       }`}>
                         {applicant.status}
                       </span>
-                      {applicant.resumeFilePath && (
-                        <a href={`/api/files/${applicant.resumeFilePath}`}
+                      {applicant.resumeUrl && (
+                        <a href={`/api/files/${applicant.resumeUrl}`}
                           className="btn btn-outline btn-sm" download>
                           <Download size={13} /> Resume
                         </a>
