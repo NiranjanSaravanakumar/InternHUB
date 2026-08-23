@@ -20,7 +20,7 @@ export default function LoginPage() {
       const res = await authService.loginStudent(form);
       login(res.data);
       toast.success(`Welcome back, ${res.data.name}!`);
-      if (res.data.role === 'CANDIDATE') {
+      if (res.data.role === 'STUDENT') {
         navigate(res.data.profileComplete ? '/student/dashboard' : '/student/profile');
       } else {
         navigate('/recruiter/dashboard');

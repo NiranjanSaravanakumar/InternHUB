@@ -21,7 +21,7 @@ function ProtectedRoute({ children, requiredRole }) {
   if (loading) return <div className="loading-screen">Loading...</div>;
   if (!isAuthenticated()) return <Navigate to="/login" replace />;
   if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to={user?.role === 'CANDIDATE' ? '/student/dashboard' : '/recruiter/dashboard'} replace />;
+    return <Navigate to={user?.role === 'STUDENT' ? '/student/dashboard' : '/recruiter/dashboard'} replace />;
   }
   return children;
 }
@@ -29,7 +29,7 @@ function ProtectedRoute({ children, requiredRole }) {
 function PublicOnlyRoute({ children }) {
   const { isAuthenticated, user } = useAuth();
   if (isAuthenticated()) {
-    return <Navigate to={user?.role === 'CANDIDATE' ? '/student/dashboard' : '/recruiter/dashboard'} replace />;
+    return <Navigate to={user?.role === 'STUDENT' ? '/student/dashboard' : '/recruiter/dashboard'} replace />;
   }
   return children;
 }
@@ -50,13 +50,13 @@ function AppRoutes() {
 
         {/* Student Routes */}
         <Route path="/student/dashboard" element={
-          <ProtectedRoute requiredRole="CANDIDATE"><StudentDashboard /></ProtectedRoute>
+          <ProtectedRoute requiredRole="STUDENT"><StudentDashboard /></ProtectedRoute>
         } />
         <Route path="/student/profile" element={
-          <ProtectedRoute requiredRole="CANDIDATE"><ProfileSetup /></ProtectedRoute>
+          <ProtectedRoute requiredRole="STUDENT"><ProfileSetup /></ProtectedRoute>
         } />
         <Route path="/student/applications" element={
-          <ProtectedRoute requiredRole="CANDIDATE"><MyApplications /></ProtectedRoute>
+          <ProtectedRoute requiredRole="STUDENT"><MyApplications /></ProtectedRoute>
         } />
 
         {/* Recruiter Routes */}
