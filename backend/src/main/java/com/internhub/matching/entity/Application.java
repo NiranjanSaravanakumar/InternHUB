@@ -1,5 +1,7 @@
 package com.internhub.matching.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -28,13 +30,31 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "internship_id", nullable = false)
     private Internship internship;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
+
+    /** Flat fields exposed in JSON instead of full nested objects */
+    @JsonProperty("internshipId")
+    public Long getInternshipId() { return internship != null ? internship.getId() : null; }
+
+    @JsonProperty("internshipRole")
+    public String getInternshipRole() { return internship != null ? internship.getRole() : null; }
+
+    @JsonProperty("companyName")
+    public String getCompanyName() { return internship != null ? internship.getCompanyName() : null; }
+
+    @JsonProperty("studentId")
+    public Long getStudentId() { return student != null ? student.getId() : null; }
+
+    @JsonProperty("studentName")
+    public String getStudentName() { return student != null ? student.getName() : null; }
 
     /** Cached match score at time of application (0.00 – 100.00) */
     @Column(name = "match_percentage", nullable = false, precision = 5, scale = 2)

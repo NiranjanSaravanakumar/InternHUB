@@ -1,5 +1,7 @@
 package com.internhub.matching.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -23,9 +25,21 @@ public class Internship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "recruiter_id", nullable = false)
     private User recruiter;
+
+    /** Convenience fields so the frontend gets recruiter info without the full User graph */
+    @JsonProperty("recruiterId")
+    public Long getRecruiterId() {
+        return recruiter != null ? recruiter.getId() : null;
+    }
+
+    @JsonProperty("recruiterName")
+    public String getRecruiterName() {
+        return recruiter != null ? recruiter.getName() : null;
+    }
 
     @Column(name = "company_name", nullable = false, length = 150)
     private String companyName;

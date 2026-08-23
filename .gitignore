@@ -16,6 +16,7 @@ logs/
 .env.local
 .env.production
 .env.*.local
+TEST_CREDENTIALS.env
 
 # ─── Frontend ──────────────────────────────────────────────
 frontend/node_modules/
