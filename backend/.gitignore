@@ -44,3 +44,4 @@ logs/
 
 # ─── Maven Wrapper Downloaded Repo ──────────────────────────
 .mvn/repository/
+.mvn/wrapper/dists/

@@ -41,7 +41,7 @@ public class StudentProfile {
     @Column(name = "passout_year", nullable = false)
     private Integer passoutYear;
 
-    @Column(nullable = false, precision = 3, scale = 2)
+    @Column(nullable = false)
     private Double cgpa;
 
     /**
