@@ -69,6 +69,10 @@ public class Application {
     @Column(name = "applied_at", updatable = false)
     private LocalDateTime appliedAt = LocalDateTime.now();
 
+    /** AI skill assessment score (0–15). Null if assessment was skipped or not yet taken. */
+    @Column(name = "assessment_score")
+    private Integer assessmentScore;
+
     public enum Status {
         APPLIED, REVIEWED, SHORTLISTED, REJECTED
     }

@@ -40,14 +40,13 @@ export default function StudentDashboard() {
 
 
 
-  const handleApply = async (internshipId) => {
+  const handleApply = async (internshipId, assessmentScore) => {
     if (!profile?.resumeUrl) {
       toast.error('Please upload your resume first');
       return;
     }
     try {
-      await studentService.applyForInternship(internshipId);
-      toast.success('Application submitted! You are on your way!');
+      await studentService.applyForInternship(internshipId, assessmentScore);
       setMatches(prev => prev.map(m =>
         m.internshipId === internshipId ? { ...m, alreadyApplied: true } : m
       ));
@@ -58,8 +57,9 @@ export default function StudentDashboard() {
 
   const handleView = (internship) => setSelectedInternship(internship);
   const handleCloseModal = () => setSelectedInternship(null);
-  const handleConfirmApply = async (internshipId) => {
-    await handleApply(internshipId);
+  // score is forwarded from SkillAssessment → InternshipModal → here (not used directly, SA handles the API call)
+  const handleConfirmApply = async (internshipId, assessmentScore) => {
+    await handleApply(internshipId, assessmentScore);
   };
 
   // Filter + sort

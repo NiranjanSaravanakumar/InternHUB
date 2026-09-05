@@ -2,7 +2,7 @@
 
 # ⚙️ InternHUB — Backend
 
-### Spring Boot 3 · MySQL · JWT Security
+### Spring Boot 3 · MySQL · JWT Security · AI Assessment
 
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)](https://java.com)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-green?logo=springboot)](https://spring.io)
@@ -41,47 +41,51 @@ backend/
 │   │   │   │   ├── RecruiterRegisterRequest.java
 │   │   │   │   ├── StudentProfileRequest.java
 │   │   │   │   ├── InternshipRequest.java
-│   │   │   │   ├── MatchResultDTO.java    ← Score + per-param breakdown
-│   │   │   │   └── ApplicantDTO.java
+│   │   │   │   ├── MatchResultDTO.java         ← Score + per-param breakdown
+│   │   │   │   ├── ApplicantDTO.java            ← Includes assessmentScore ★
+│   │   │   │   └── AssessmentSubmitRequest.java ← NEW: carries quiz score on apply ★
 │   │   │   │
 │   │   │   ├── entity/
-│   │   │   │   ├── User.java              ← CANDIDATE + RECRUITER (single table)
+│   │   │   │   ├── User.java              ← STUDENT + RECRUITER (single table)
 │   │   │   │   ├── StudentProfile.java    ← CGPA, skills, domain, location
 │   │   │   │   ├── Internship.java        ← Job posting entity
-│   │   │   │   └── JobApplication.java    ← Student ↔ Internship with match score
+│   │   │   │   ├── RecruiterProfile.java  ← Company name + role
+│   │   │   │   └── Application.java       ← Student ↔ Internship with match% + assessmentScore ★
 │   │   │   │
 │   │   │   ├── repository/
 │   │   │   │   ├── UserRepository.java
 │   │   │   │   ├── StudentProfileRepository.java
 │   │   │   │   ├── InternshipRepository.java
-│   │   │   │   └── JobApplicationRepository.java
+│   │   │   │   ├── ApplicationRepository.java
+│   │   │   │   └── RecruiterProfileRepository.java
 │   │   │   │
 │   │   │   ├── service/
 │   │   │   │   ├── AuthService.java        ← Register, login, BCrypt, JWT
 │   │   │   │   ├── MatchingService.java    ← 4-parameter weighted algorithm ⭐
-│   │   │   │   ├── StudentService.java     ← Profile, matches, apply
-│   │   │   │   └── RecruiterService.java   ← Post/manage internships, applicants
+│   │   │   │   ├── StudentService.java     ← Profile, matches, apply (with score) ★
+│   │   │   │   └── RecruiterService.java   ← Post/manage internships; sort by assessmentScore ★
 │   │   │   │
 │   │   │   └── exception/
 │   │   │       ├── AppException.java            ← Custom exception with HttpStatus
 │   │   │       └── GlobalExceptionHandler.java  ← @RestControllerAdvice
 │   │   │
 │   │   └── resources/
-│   │       └── application.properties   ← DB, JWT, CORS, upload config
+│   │       ├── application.properties   ← DB, JWT, CORS, upload config
+│   │       └── schema.sql               ← Reference DDL (Hibernate auto-applies)
 │   │
 │   └── test/
 │       └── java/com/internhub/matching/
 │           └── InternshipMatchingApplicationTests.java
 │
 ├── .mvn/wrapper/
-│   ├── maven-wrapper.jar
-│   └── maven-wrapper.properties        ← Points to Maven 3.9.6
 ├── mvnw                                ← Unix Maven wrapper
 ├── mvnw.cmd                            ← Windows Maven wrapper
 ├── pom.xml
 ├── .gitignore
 └── README.md
 ```
+
+> ★ = modified or added as part of the AI Skill Assessment feature
 
 ---
 
@@ -109,7 +113,7 @@ Edit [`src/main/resources/application.properties`](./src/main/resources/applicat
 
 ```properties
 # ── Change these to match your MySQL setup ──
-spring.datasource.url=jdbc:mysql://localhost:3306/internhub_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/internhub_db?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=YOUR_MYSQL_PASSWORD
 
@@ -134,31 +138,28 @@ app.jwt.expiration=86400000      # 24 hours in ms
 
 ### 4 — Stopping the Application
 
-To stop the Spring Boot server normally, press `Ctrl + C` in its terminal window.
-
-If the server is stuck in the background and you need to forcefully kill port `8080`, run this in a new terminal:
+Press `Ctrl + C` in its terminal window. To forcefully kill port 8080:
 
 ```powershell
 # Windows (PowerShell)
 Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force
 ```
 
-*(Alternatively, run `npx kill-port 8080` if you have Node installed).*
+*(Or: `npx kill-port 8080`)*
 
 ---
 
 ## 🗄️ Database Schema
 
-Tables are **auto-created by Hibernate** on startup (`ddl-auto=update`). No SQL scripts needed.
+Tables are **auto-created/altered by Hibernate** on startup (`ddl-auto=update`). No SQL scripts needed — including the new `assessment_score` column.
 
 | Table | Description |
 |-------|-------------|
 | `users` | All users (students + recruiters) with `role` column |
-| `student_profiles` | Matching data: CGPA, domain, location, experience |
-| `student_skills` | Skills list (one-to-many from student_profiles) |
-| `internships` | Job postings with required skills, min CGPA, stipend |
-| `internship_skills` | Required skills per internship |
-| `job_applications` | Student ↔ Internship with cached match score |
+| `student_profiles` | Matching data: CGPA, skills (CSV), domain, location, resume URL |
+| `recruiter_profiles` | Company name and employee role |
+| `internships` | Job postings with required skills (CSV), min CGPA, stipend |
+| `applications` | Student ↔ Internship with `match_percentage` + **`assessment_score`** (0–15) |
 
 ---
 
@@ -181,6 +182,18 @@ Returns a `MatchResultDTO` with:
 
 ---
 
+## 🧠 AI Assessment Integration
+
+When a student applies, the frontend:
+1. Calls **Groq API** (`llama3-8b-8192`) to generate 15 MCQs for the internship's required skills
+2. Student completes the quiz (10-minute timer)
+3. Score is calculated client-side
+4. Frontend POSTs to `/api/student/apply/{id}` with `{ "assessmentScore": 12 }` in the body
+
+The backend persists it on the `Application` entity. Recruiters see applicants sorted by `assessmentScore DESC`.
+
+---
+
 ## 📡 REST API Endpoints
 
 ### Auth — `/api/auth` (Public)
@@ -189,18 +202,18 @@ Returns a `MatchResultDTO` with:
 |--------|----------|------|----------|
 | `POST` | `/register/student` | `StudentRegisterRequest` | `AuthResponse` (JWT) |
 | `POST` | `/register/recruiter` | `RecruiterRegisterRequest` | `AuthResponse` (JWT) |
-| `POST` | `/login` | `AuthRequest` (email + password) | `AuthResponse` (JWT) |
+| `POST` | `/login` | `{ email, password }` | `AuthResponse` (JWT) |
 
-### Student — `/api/student` (Role: `CANDIDATE`)
+### Student — `/api/student` (Role: `STUDENT`)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/profile` | Get student matching profile |
-| `PUT` | `/profile` | Update CGPA, skills, domain, location |
-| `POST` | `/profile/resume` | Upload resume file |
-| `GET` | `/matches` | Get all internships ranked by match % |
-| `POST` | `/apply/{internshipId}` | Apply for an internship |
-| `GET` | `/applications` | List my applications |
+| Method | Endpoint | Body | Description |
+|--------|----------|------|-------------|
+| `GET` | `/profile` | — | Get student matching profile |
+| `PUT` | `/profile` | `StudentProfileRequest` | Update CGPA, skills, domain, location |
+| `POST` | `/profile/resume` | `multipart/form-data` | Upload resume file |
+| `GET` | `/matches` | — | Get all internships ranked by match % |
+| `POST` | `/apply/{internshipId}` | `{ assessmentScore?: number }` | Apply — score persisted |
+| `GET` | `/applications` | — | List my applications |
 
 ### Recruiter — `/api/recruiter` (Role: `RECRUITER`)
 
@@ -209,14 +222,14 @@ Returns a `MatchResultDTO` with:
 | `POST` | `/internships` | Post a new internship |
 | `GET` | `/internships` | List my postings |
 | `DELETE` | `/internships/{id}` | Delete a posting |
-| `GET` | `/internships/{id}/applicants` | View applicants (sorted by match %) |
+| `GET` | `/internships/{id}/applicants` | View applicants — **sorted by assessmentScore DESC** |
 
 ### Internships — `/api/internships` (Public)
 
-| Method | Endpoint | Query Params |
-|--------|----------|--------------|
-| `GET` | `/internships` | `?domain=&location=&minStipend=` |
-| `GET` | `/internships/{id}` | — |
+| Method | Endpoint | Description |
+|--------|----------| ------------|
+| `GET` | `/` | List all internships |
+| `GET` | `/{id}` | Get single internship |
 
 ---
 
@@ -236,14 +249,14 @@ Request → JwtAuthFilter (OncePerRequestFilter)
         SecurityContextHolder.setAuthentication()
                 ↓
         SecurityConfig RBAC rules
-        (/api/student/** → ROLE_CANDIDATE)
+        (/api/student/**  → ROLE_STUDENT)
         (/api/recruiter/** → ROLE_RECRUITER)
 ```
 
 **Error Responses** (standardized via `GlobalExceptionHandler`):
 ```json
 {
-  "timestamp": "2025-08-23T10:00:00",
+  "timestamp": "2026-09-05T10:00:00",
   "status": 401,
   "error": "Unauthorized",
   "message": "Invalid email or password"

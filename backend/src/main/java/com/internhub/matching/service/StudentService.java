@@ -95,7 +95,7 @@ public class StudentService {
     // ── Apply ────────────────────────────────────────────────────────────
 
     @Transactional
-    public void apply(User user, Long internshipId) {
+    public void apply(User user, Long internshipId, Integer assessmentScore) {
         Internship internship = internshipRepository.findById(internshipId)
                 .orElseThrow(() -> new AppException("Internship not found", HttpStatus.NOT_FOUND));
 
@@ -112,6 +112,7 @@ public class StudentService {
                 .internship(internship)
                 .student(user)
                 .matchPercentage(BigDecimal.valueOf(match.getMatchScore()))
+                .assessmentScore(assessmentScore)
                 .status(Application.Status.APPLIED)
                 .build();
 

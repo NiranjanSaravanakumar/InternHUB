@@ -27,8 +27,8 @@ export const studentService = {
     //   matchedSkills[], missingSkills[], alreadyApplied }
 
   // ── Apply ─────────────────────────────────────────────────────────────
-  applyForInternship: (internshipId) =>
-    api.post(`/student/apply/${internshipId}`),
+  applyForInternship: (internshipId, assessmentScore) =>
+    api.post(`/student/apply/${internshipId}`, { assessmentScore }),
 
   // ── Applications ──────────────────────────────────────────────────────
   getMyApplications: () =>

@@ -1,5 +1,6 @@
 package com.internhub.matching.controller;
 
+import com.internhub.matching.dto.AssessmentSubmitRequest;
 import com.internhub.matching.dto.MatchResultDTO;
 import com.internhub.matching.dto.StudentProfileRequest;
 import com.internhub.matching.entity.Application;
@@ -55,8 +56,10 @@ public class StudentController {
     @PostMapping("/apply/{internshipId}")
     public ResponseEntity<Map<String, String>> apply(
             @AuthenticationPrincipal User user,
-            @PathVariable Long internshipId) {
-        studentService.apply(user, internshipId);
+            @PathVariable Long internshipId,
+            @RequestBody(required = false) AssessmentSubmitRequest req) {
+        Integer score = req != null ? req.getAssessmentScore() : null;
+        studentService.apply(user, internshipId, score);
         return ResponseEntity.ok(Map.of("message", "Application submitted successfully"));
     }
 

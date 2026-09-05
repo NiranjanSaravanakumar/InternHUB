@@ -40,4 +40,5 @@ public class ApplicantDTO {
     private String department;
     private Integer passoutYear;
     private String resumeUrl;             // was resumeFilePath
+    private Integer assessmentScore;      // AI skill quiz score (0–15), null if not taken
 }

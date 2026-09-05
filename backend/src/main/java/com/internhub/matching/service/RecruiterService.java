@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,7 @@ public class RecruiterService {
         }
 
         return applicationRepository
-                .findByInternshipOrderByMatchPercentageDesc(internship)
+                .findByInternship(internship)
                 .stream()
                 .map(app -> {
                     User student = app.getStudent();
@@ -82,6 +83,7 @@ public class RecruiterService {
                     return ApplicantDTO.builder()
                             .applicationId(app.getId())
                             .matchPercentage(app.getMatchPercentage())
+                            .assessmentScore(app.getAssessmentScore())
                             .status(app.getStatus().name())
                             .appliedAt(app.getAppliedAt())
                             .studentId(student.getId())
@@ -99,6 +101,14 @@ public class RecruiterService {
                             .resumeUrl(profile != null ? profile.getResumeUrl() : null)
                             .build();
                 })
+                // Sort: highest assessment score first, then highest match %, nulls last
+                .sorted(Comparator
+                        .<ApplicantDTO, Integer>comparing(
+                                dto -> dto.getAssessmentScore() != null ? dto.getAssessmentScore() : -1,
+                                Comparator.reverseOrder())
+                        .thenComparing(
+                                dto -> dto.getMatchPercentage() != null ? dto.getMatchPercentage().doubleValue() : 0.0,
+                                Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 }
